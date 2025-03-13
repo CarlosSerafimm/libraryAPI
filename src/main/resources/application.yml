@@ -2,12 +2,15 @@ spring:
   application:
     name: libraryApi
   datasource:
-    url: jdbc:mysql://localhost:3307/library
+    url: jdbc:mysql://localhost:3307/library  
     user: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    show-sql: true
+#    show-sql: true
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update
+#      ddl-auto: update
+      ddl-auto: none
+    properties:
+      hibernate.format_sql: true
