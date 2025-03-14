@@ -1,7 +1,10 @@
 package libraryApi.service;
 
+import libraryApi.exceptions.OperacaoNaoPermitidaException;
 import libraryApi.model.Autor;
 import libraryApi.repository.AutorRepository;
+import libraryApi.repository.LivroRepository;
+import libraryApi.validator.AutorValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +16,13 @@ public class AutorService {
 
     @Autowired
     private AutorRepository autorRepository;
+    @Autowired
+    private AutorValidator autorValidator;
+    @Autowired
+    private LivroRepository livroRepository;
 
     public Autor salvar(Autor autor){
-        
+        autorValidator.validar(autor);
         return autorRepository.save(autor);
     }
 
@@ -24,6 +31,7 @@ public class AutorService {
         if (autor.getId() == null){
             throw new IllegalArgumentException("Para atualizar é necessario que o autor já esteja cadastrado!");
         }
+        autorValidator.validar(autor);
         autorRepository.save(autor);
     }
 
@@ -32,6 +40,9 @@ public class AutorService {
     }
 
     public void deletar (Autor autor){
+        if (possuiLivro(autor)){
+            throw new OperacaoNaoPermitidaException("Não é permitido excluir um autor que possui livros cadastrados!");
+        }
         autorRepository.delete(autor);
     }
     public List<Autor> pesquisaFiltrada(String nome, String nacionalidade){
@@ -51,5 +62,8 @@ public class AutorService {
         return autorRepository.findByNacionalidadeContainingIgnoreCase(nacionalidade);
         }
         return autorRepository.findAll();
+    }
+    public boolean possuiLivro(Autor autor){
+        return livroRepository.existsByAutor(autor);
     }
 }

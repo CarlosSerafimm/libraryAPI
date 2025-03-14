@@ -3,6 +3,9 @@ package libraryApi.controllers;
 
 
 import libraryApi.controllers.dto.AutorDTO;
+import libraryApi.controllers.dto.ErroResposta;
+import libraryApi.exceptions.OperacaoNaoPermitidaException;
+import libraryApi.exceptions.RegistroDuplicadoException;
 import libraryApi.model.Autor;
 import libraryApi.service.AutorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +27,20 @@ public class AutorController {
     public AutorService autorService;
 
     @PostMapping
-    public ResponseEntity<Void> salvar(@RequestBody AutorDTO autor){
+    public ResponseEntity<Object> salvar(@RequestBody AutorDTO autor){
+        try {
 
-        Autor autorEntidade = autor.mapearAutor();
-        autorService.salvar(autorEntidade);
+            Autor autorEntidade = autor.mapearAutor();
+            autorService.salvar(autorEntidade);
 
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(autorEntidade.getId()).toUri();
+            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(autorEntidade.getId()).toUri();
 
 
-        return ResponseEntity.created(uri).build();
+            return ResponseEntity.created(uri).build();
+        }catch (RegistroDuplicadoException e){
+            var erroDTO = ErroResposta.conflito(e.getMessage());
+            return ResponseEntity.status(erroDTO.status()).body(erroDTO);
+        }
     }
 
     @GetMapping("/{id}")
@@ -48,7 +56,9 @@ public class AutorController {
         return ResponseEntity.notFound().build();
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Integer id){
+    public ResponseEntity<Object> deletar(@PathVariable Integer id){
+
+        try {
 
         Optional<Autor> autorOptional = autorService.obterPorId(id);
 
@@ -57,6 +67,10 @@ public class AutorController {
         }
         autorService.deletar(autorOptional.get());
         return ResponseEntity.noContent().build();
+        }catch (OperacaoNaoPermitidaException e){
+            ErroResposta erroResposta = ErroResposta.respostaPadrao(e.getMessage());
+            return ResponseEntity.status(erroResposta.status()).body(erroResposta);
+        }
     }
 
     @GetMapping
@@ -78,7 +92,9 @@ public class AutorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> atualizar(@PathVariable("id") Integer id, @RequestBody AutorDTO dto){
+    public ResponseEntity<Object> atualizar(@PathVariable("id") Integer id, @RequestBody AutorDTO dto){
+
+        try {
 
         Optional<Autor> autorOptional = autorService.obterPorId(id);
 
@@ -93,5 +109,9 @@ public class AutorController {
 
         autorService.atualizar(autor);
         return ResponseEntity.noContent().build();
+        }catch (RegistroDuplicadoException e){
+            var erroDTO = ErroResposta.conflito(e.getMessage());
+            return ResponseEntity.status(erroDTO.status()).body(erroDTO);
+        }
     }
 }

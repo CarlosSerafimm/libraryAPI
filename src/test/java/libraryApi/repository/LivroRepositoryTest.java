@@ -32,7 +32,7 @@ class LivroRepositoryTest {
         livro.setTitulo("BIO");
         livro.setDataPublicacao(LocalDate.of(1999,10,15));
 
-        Autor autor = autorRepository.findById(3).orElse(null);
+        Autor autor = autorRepository.findById(9).orElse(null);
 
         livro.setAutor(autor);
 
