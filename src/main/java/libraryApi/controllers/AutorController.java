@@ -78,7 +78,7 @@ public class AutorController {
     public ResponseEntity<List<AutorDTO>> pesquisar (@RequestParam(value = "nome", required = false) String nome,
                                                      @RequestParam(value = "nacionalidade", required = false) String nacionalidade){
 
-        List<Autor> resultado =  autorService.pesquisaFiltrada(nome, nacionalidade);
+        List<Autor> resultado =  autorService.buscaByExample(nome, nacionalidade);
 
         List<AutorDTO> lista = resultado
                 .stream()
