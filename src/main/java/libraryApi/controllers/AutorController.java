@@ -2,6 +2,7 @@ package libraryApi.controllers;
 
 
 
+import jakarta.validation.Valid;
 import libraryApi.controllers.dto.AutorDTO;
 import libraryApi.controllers.dto.ErroResposta;
 import libraryApi.exceptions.OperacaoNaoPermitidaException;
@@ -27,7 +28,7 @@ public class AutorController {
     public AutorService autorService;
 
     @PostMapping
-    public ResponseEntity<Object> salvar(@RequestBody AutorDTO autor){
+    public ResponseEntity<Object> salvar(@RequestBody @Valid AutorDTO autor){
         try {
 
             Autor autorEntidade = autor.mapearAutor();
@@ -92,7 +93,7 @@ public class AutorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> atualizar(@PathVariable("id") Integer id, @RequestBody AutorDTO dto){
+    public ResponseEntity<Object> atualizar(@PathVariable("id") Integer id, @RequestBody @Valid AutorDTO dto){
 
         try {
 

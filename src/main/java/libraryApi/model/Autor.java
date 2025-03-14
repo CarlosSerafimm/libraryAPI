@@ -1,6 +1,8 @@
 package libraryApi.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,12 +22,15 @@ public class Autor {
     private Integer id;
 
     @Column(name = "nome", nullable = false)
+    @Size(min = 3, max = 100, message = "Adicione um nome entre 3-100 caracteres")
     private String nome;
 
     @Column(name = "nacionalidade", nullable = false)
+    @Size(min = 2, max = 50, message = "Adicione uma nacionalidade entre 2-50 caracteres")
     private String nacionalidade;
 
     @Column(name = "data_nascimento", nullable = false)
+    @Past(message = "Não pode ser uma data futura")
     private LocalDate dataNascimento;
 
 
