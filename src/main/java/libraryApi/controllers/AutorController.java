@@ -5,6 +5,7 @@ package libraryApi.controllers;
 import jakarta.validation.Valid;
 import libraryApi.controllers.dto.AutorDTO;
 import libraryApi.controllers.dto.ErroResposta;
+import libraryApi.controllers.mappers.AutorMapper;
 import libraryApi.exceptions.OperacaoNaoPermitidaException;
 import libraryApi.exceptions.RegistroDuplicadoException;
 import libraryApi.model.Autor;
@@ -25,16 +26,18 @@ import java.util.stream.Collectors;
 public class AutorController {
 
     @Autowired
-    public AutorService autorService;
+    private AutorService autorService;
+    @Autowired
+    private AutorMapper autorMapper;
 
     @PostMapping
-    public ResponseEntity<Object> salvar(@RequestBody @Valid AutorDTO autor){
+    public ResponseEntity<Object> salvar(@RequestBody @Valid AutorDTO dto){
         try {
 
-            Autor autorEntidade = autor.mapearAutor();
-            autorService.salvar(autorEntidade);
+            Autor autor = autorMapper.toEntity(dto);
+            autorService.salvar(autor);
 
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(autorEntidade.getId()).toUri();
+            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(autor.getId()).toUri();
 
 
             return ResponseEntity.created(uri).build();
@@ -48,13 +51,23 @@ public class AutorController {
     public ResponseEntity<AutorDTO> obterDetalhes(@PathVariable Integer id){
 
         Optional<Autor> autorOptional = autorService.obterPorId(id);
-        if (autorOptional.isPresent()){
 
-            Autor autor = autorOptional.get();
-            AutorDTO dto = new AutorDTO(autor.getId(), autor.getNome(), autor.getDataNascimento(), autor.getNacionalidade());
-            return ResponseEntity.ok(dto);
-        }
-        return ResponseEntity.notFound().build();
+        return autorService
+                .obterPorId(id)
+                .map(autor -> {
+                    AutorDTO dto = autorMapper.toDTO(autor);
+                    return ResponseEntity.ok(dto);
+                }).orElseGet(() -> {
+                    return ResponseEntity.notFound().build();
+                });
+
+//        if (autorOptional.isPresent()){
+//
+//            Autor autor = autorOptional.get();
+//            AutorDTO dto = autorMapper.toDTO(autor);
+//            return ResponseEntity.ok(dto);
+//        }
+//        return ResponseEntity.notFound().build();
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deletar(@PathVariable Integer id){
@@ -82,12 +95,7 @@ public class AutorController {
 
         List<AutorDTO> lista = resultado
                 .stream()
-                .map(autor -> new AutorDTO(
-                        autor.getId(),
-                        autor.getNome(),
-                        autor.getDataNascimento(),
-                        autor.getNacionalidade())
-                ).collect(Collectors.toList());
+                .map(autorMapper::toDTO).collect(Collectors.toList());
 
         return ResponseEntity.ok(lista);
     }

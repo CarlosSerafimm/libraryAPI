@@ -2,12 +2,17 @@ package libraryApi.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "livro")
+@EntityListeners(AuditingEntityListener.class)
 public class Livro {
 
     @Id
@@ -33,6 +38,18 @@ public class Livro {
     @ManyToOne
     @JoinColumn(name = "id_autor")
     private Autor autor;
+
+    @CreatedDate
+    @Column(name = "data_cadastro")
+    private LocalDateTime dataCadastro;
+
+    @LastModifiedDate
+    @Column(name = "data_atualizacao")
+    private LocalDateTime dataAtualizacao;
+
+
+    @Column(name = "id_usuario")
+    private Integer idUsuario;
 
     public Integer getId() {
         return id;

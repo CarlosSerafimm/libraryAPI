@@ -3,6 +3,7 @@ comandosDocker.txt
 src/test/
 
 sql.txt
+isbn.txt
 
 target/
 !.mvn/wrapper/maven-wrapper.jar
