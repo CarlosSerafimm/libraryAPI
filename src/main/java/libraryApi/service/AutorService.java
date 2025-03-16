@@ -47,24 +47,6 @@ public class AutorService {
         }
         autorRepository.delete(autor);
     }
-    public List<Autor> pesquisaFiltrada(String nome, String nacionalidade){
-
-
-        if (nome != null && nome.isEmpty()) nome = null;
-        if (nacionalidade != null && nacionalidade.isEmpty()) nacionalidade = null;
-
-        if (nome != null && nacionalidade != null){
-            return autorRepository.findByNomeContainingIgnoreCaseAndNacionalidadeContainingIgnoreCase(nome, nacionalidade);
-        }
-        if (nome != null){
-            return autorRepository.findByNomeContainingIgnoreCase(nome);
-        }
-        if (nacionalidade != null){
-
-        return autorRepository.findByNacionalidadeContainingIgnoreCase(nacionalidade);
-        }
-        return autorRepository.findAll();
-    }
 
     public List<Autor> buscaByExample(String nome, String nacionalidade){
 

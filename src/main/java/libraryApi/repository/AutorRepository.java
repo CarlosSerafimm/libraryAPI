@@ -11,10 +11,6 @@ import java.util.Optional;
 
 public interface AutorRepository extends JpaRepository<Autor, Integer> {
 
-    List<Autor> findByNomeContainingIgnoreCase(String nome);
-    List<Autor> findByNacionalidadeContainingIgnoreCase(String nacionalidade);
-    List<Autor> findByNomeContainingIgnoreCaseAndNacionalidadeContainingIgnoreCase(String nome, String nacionalidade);
-
 
     @Query("SELECT a FROM Autor a WHERE TRIM(LOWER(a.nome)) = TRIM(LOWER(:nome)) " +
             "AND a.dataNascimento = :dataNascimento " +

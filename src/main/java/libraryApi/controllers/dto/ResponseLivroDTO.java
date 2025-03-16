@@ -12,6 +12,5 @@ public record ResponseLivroDTO(
         LocalDate dataPublicacao,
         GeneroLivro genero,
         BigDecimal preco,
-        Integer idAutor,
         AutorDTO autor) {
 }

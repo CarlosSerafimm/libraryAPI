@@ -3,6 +3,7 @@ package libraryApi.controllers;
 import jakarta.validation.Valid;
 import libraryApi.controllers.dto.ErroResposta;
 import libraryApi.controllers.dto.RequestLivroDTO;
+import libraryApi.controllers.dto.ResponseLivroDTO;
 import libraryApi.controllers.mappers.LivroMapper;
 import libraryApi.exceptions.RegistroDuplicadoException;
 import libraryApi.model.Livro;
@@ -32,10 +33,7 @@ public class LivroController implements GenericController{
 
 
             URI uri = gerarHeaderLocation(livro.getId());
-            //enviar para service para validar e salvar
-            //criar url
-            //retornar created com header com location
-            //campo obrigatorio
+            //validar no service
             //conflito isbn
 
             return ResponseEntity.created(uri).build();
@@ -43,5 +41,24 @@ public class LivroController implements GenericController{
             ErroResposta conflito = ErroResposta.conflito(e.getMessage());
             return ResponseEntity.status(conflito.status()).body(conflito);
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseLivroDTO> obterDetalhes(@PathVariable("id") Integer id){
+
+        return livroService.obterPorId(id)
+                .map(livro -> {
+                    ResponseLivroDTO dto = livroMapper.toDTO(livro);
+                    return ResponseEntity.ok(dto);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deletar(@PathVariable("id") Integer id){
+        return livroService.obterPorId(id)
+                .map(livro -> {
+                    livroService.deletar(id);
+                    return ResponseEntity.noContent().build();
+                }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
