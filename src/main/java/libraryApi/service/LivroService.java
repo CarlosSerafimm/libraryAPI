@@ -4,6 +4,7 @@ import libraryApi.model.GeneroLivro;
 import libraryApi.model.Livro;
 import libraryApi.repository.LivroRepository;
 import libraryApi.repository.specs.LivroSpecs;
+import libraryApi.validator.LivroValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,12 @@ public class LivroService {
 
     @Autowired
     private LivroRepository livroRepository;
+    @Autowired
+    private LivroValidator livroValidator;
+
 
     public Livro salvar(Livro livro) {
+        livroValidator.validar(livro);
         return livroRepository.save(livro);
     }
 
@@ -68,6 +73,7 @@ public class LivroService {
         if (livro.getId() == null){
             throw new IllegalArgumentException("Para atualizar é necessario que o livro já esteja cadastrado!");
         }
+        livroValidator.validar(livro);
         livroRepository.save(livro);
     }
 

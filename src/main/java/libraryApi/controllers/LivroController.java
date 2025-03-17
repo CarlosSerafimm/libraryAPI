@@ -31,14 +31,9 @@ public class LivroController implements GenericController {
         try {
 
             Livro livro = livroMapper.toEntity(dto);
-
             livroService.salvar(livro);
 
-
             URI uri = gerarHeaderLocation(livro.getId());
-
-            //validar no service
-            //conflito isbn
 
             return ResponseEntity.created(uri).build();
         } catch (RegistroDuplicadoException e) {
