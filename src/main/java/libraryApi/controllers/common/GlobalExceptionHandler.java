@@ -2,6 +2,7 @@ package libraryApi.controllers.common;
 
 import libraryApi.controllers.dto.ErroCampo;
 import libraryApi.controllers.dto.ErroResposta;
+import libraryApi.exceptions.CampoInvalidoException;
 import libraryApi.exceptions.OperacaoNaoPermitidaException;
 import libraryApi.exceptions.RegistroDuplicadoException;
 import org.springframework.http.HttpStatus;
@@ -35,5 +36,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OperacaoNaoPermitidaException.class)
     public ErroResposta handleOperacaoNaoPermitidaException(OperacaoNaoPermitidaException e) {
         return ErroResposta.respostaPadrao(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(RuntimeException.class)
+    public ErroResposta handleErrosNaoTratados(RuntimeException e) {
+        return new ErroResposta(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Ocorreu um erro inesperado. Entre em contato com a administração",
+                List.of());
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(CampoInvalidoException.class)
+    public ErroResposta handleCampoInvalidoException(CampoInvalidoException e){
+        return new ErroResposta(HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                 "Erro de validação",
+                List.of(new ErroCampo(e.getCampo(), e.getMessage())));
     }
 }
