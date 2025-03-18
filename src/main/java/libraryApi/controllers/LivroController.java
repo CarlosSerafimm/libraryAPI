@@ -10,6 +10,7 @@ import libraryApi.model.GeneroLivro;
 import libraryApi.model.Livro;
 import libraryApi.service.LivroService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,17 +61,27 @@ public class LivroController implements GenericController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<ResponseLivroDTO>> pesquisa(@RequestParam(value = "isbn", required = false) String isbn, @RequestParam(value = "titulo", required = false) String titulo, @RequestParam(value = "nomeAutor", required = false) String nomeAutor, @RequestParam(value = "genero", required = false) GeneroLivro genero, @RequestParam(value = "anoPublicacao", required = false) Integer anoPublicacao) {
+    public ResponseEntity<Page<ResponseLivroDTO>> pesquisa(
+            @RequestParam(value = "isbn", required = false) String isbn,
+            @RequestParam(value = "titulo", required = false) String titulo,
+            @RequestParam(value = "nomeAutor", required = false) String nomeAutor,
+            @RequestParam(value = "genero", required = false) GeneroLivro genero,
+            @RequestParam(value = "anoPublicacao", required = false) Integer anoPublicacao,
+            @RequestParam(value = "pagina", defaultValue = "0") Integer pagina,
+            @RequestParam(value = "tamanhoPagina", defaultValue = "10") Integer tamanhoPagina) {
 
         //busca paginada
 
-        List<Livro> pesquisa = livroService.pesquisa(isbn, titulo, nomeAutor, genero, anoPublicacao);
-        List<ResponseLivroDTO> lista = pesquisa.stream().map(livroMapper::toDTO).collect(Collectors.toList());
-        return ResponseEntity.ok(lista);
+        Page<Livro> pesquisa = livroService.pesquisa(isbn, titulo, nomeAutor, genero, anoPublicacao, pagina, tamanhoPagina);
+
+        Page<ResponseLivroDTO> resultado = pesquisa.map(livroMapper::toDTO);
+
+
+        return ResponseEntity.ok(resultado);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> atualizar(@PathVariable Integer id, @RequestBody @Valid RequestLivroDTO dto){
+    public ResponseEntity<Object> atualizar(@PathVariable Integer id, @RequestBody @Valid RequestLivroDTO dto) {
         return livroService.obterPorId(id).map(livro -> {
             Livro entityAux = livroMapper.toEntity(dto);
 

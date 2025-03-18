@@ -6,6 +6,9 @@ import libraryApi.repository.LivroRepository;
 import libraryApi.repository.specs.LivroSpecs;
 import libraryApi.validator.LivroValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +38,7 @@ public class LivroService {
 
     //Query Params: isbn, titulo, nome autor, genero, ano de publicação
 
-    public List<Livro> pesquisa(String isbn,String titulo, String nomeAutor, GeneroLivro genero, Integer anoPublicacao){
+    public Page<Livro> pesquisa(String isbn, String titulo, String nomeAutor, GeneroLivro genero, Integer anoPublicacao, Integer pagina, Integer tamanhoPagina){
 
 
         System.out.println(isbn);
@@ -66,7 +69,9 @@ public class LivroService {
 
         }
 
-        return livroRepository.findAll(specs);
+        Pageable pageRequest = PageRequest.of(pagina,tamanhoPagina);
+
+        return livroRepository.findAll(specs, pageRequest);
     }
 
     public void atualizar(Livro livro) {
