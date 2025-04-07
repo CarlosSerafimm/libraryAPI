@@ -12,6 +12,7 @@ import libraryApi.service.LivroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -28,6 +29,7 @@ public class LivroController implements GenericController {
     private LivroMapper livroMapper;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> salvar(@RequestBody @Valid RequestLivroDTO dto) {
         try {
 
@@ -44,6 +46,7 @@ public class LivroController implements GenericController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseLivroDTO> obterDetalhes(@PathVariable("id") Integer id) {
 
         return livroService.obterPorId(id).map(livro -> {
@@ -53,6 +56,7 @@ public class LivroController implements GenericController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> deletar(@PathVariable("id") Integer id) {
         return livroService.obterPorId(id).map(livro -> {
             livroService.deletar(id);
@@ -61,6 +65,7 @@ public class LivroController implements GenericController {
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Page<ResponseLivroDTO>> pesquisa(
             @RequestParam(value = "isbn", required = false) String isbn,
             @RequestParam(value = "titulo", required = false) String titulo,
@@ -81,6 +86,7 @@ public class LivroController implements GenericController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> atualizar(@PathVariable Integer id, @RequestBody @Valid RequestLivroDTO dto) {
         return livroService.obterPorId(id).map(livro -> {
             Livro entityAux = livroMapper.toEntity(dto);

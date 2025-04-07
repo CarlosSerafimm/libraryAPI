@@ -47,9 +47,9 @@ public class Livro {
     @Column(name = "data_atualizacao")
     private LocalDateTime dataAtualizacao;
 
-
-    @Column(name = "id_usuario")
-    private Integer idUsuario;
+    @ManyToOne
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 
     public Integer getId() {
         return id;
@@ -105,6 +105,14 @@ public class Livro {
 
     public void setAutor(Autor autor) {
         this.autor = autor;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     @Override

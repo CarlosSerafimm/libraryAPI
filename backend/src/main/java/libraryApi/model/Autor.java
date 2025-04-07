@@ -3,7 +3,6 @@ package libraryApi.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
-import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -45,9 +44,9 @@ public class Autor {
     @Column(name = "data_atualizacao")
     private LocalDateTime dataAtualizacao;
 
-
-    @Column(name = "id_usuario")
-    private Integer idUsuario;
+    @ManyToOne
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 
 
     public Integer getId() {
@@ -90,14 +89,16 @@ public class Autor {
         this.livros = livros;
     }
 
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
     @Override
     public String toString() {
-        return "Autor{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", nacionalidade='" + nacionalidade + '\'' +
-                ", dataNascimento=" + dataNascimento +
-                ", livros=" + livros +
-                '}';
+        return "Autor{" + "id=" + id + ", nome='" + nome + '\'' + ", nacionalidade='" + nacionalidade + '\'' + ", dataNascimento=" + dataNascimento + ", livros=" + livros + '}';
     }
 }

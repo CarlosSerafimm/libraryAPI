@@ -2,8 +2,10 @@ package libraryApi.service;
 
 import libraryApi.model.GeneroLivro;
 import libraryApi.model.Livro;
+import libraryApi.model.Usuario;
 import libraryApi.repository.LivroRepository;
 import libraryApi.repository.specs.LivroSpecs;
+import libraryApi.security.SecurityService;
 import libraryApi.validator.LivroValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,10 +24,13 @@ public class LivroService {
     private LivroRepository livroRepository;
     @Autowired
     private LivroValidator livroValidator;
-
+    @Autowired
+    private SecurityService securityService;
 
     public Livro salvar(Livro livro) {
         livroValidator.validar(livro);
+        Usuario usuario = securityService.obterUsuarioLogado();
+        livro.setUsuario(usuario);
         return livroRepository.save(livro);
     }
 

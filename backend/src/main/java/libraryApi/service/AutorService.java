@@ -2,8 +2,10 @@ package libraryApi.service;
 
 import libraryApi.exceptions.OperacaoNaoPermitidaException;
 import libraryApi.model.Autor;
+import libraryApi.model.Usuario;
 import libraryApi.repository.AutorRepository;
 import libraryApi.repository.LivroRepository;
+import libraryApi.security.SecurityService;
 import libraryApi.validator.AutorValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -22,9 +24,13 @@ public class AutorService {
     private AutorValidator autorValidator;
     @Autowired
     private LivroRepository livroRepository;
+    @Autowired
+    private SecurityService securityService;
 
     public Autor salvar(Autor autor){
         autorValidator.validar(autor);
+        Usuario usuario = securityService.obterUsuarioLogado();
+        autor.setUsuario(usuario);
         return autorRepository.save(autor);
     }
 

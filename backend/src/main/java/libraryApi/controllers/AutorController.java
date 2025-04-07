@@ -5,9 +5,15 @@ import jakarta.validation.Valid;
 import libraryApi.controllers.dto.AutorDTO;
 import libraryApi.controllers.mappers.AutorMapper;
 import libraryApi.model.Autor;
+import libraryApi.model.Usuario;
+import libraryApi.security.SecurityService;
 import libraryApi.service.AutorService;
+import libraryApi.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -24,10 +30,18 @@ public class AutorController implements GenericController {
     @Autowired
     private AutorMapper autorMapper;
 
+
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> salvar(@RequestBody @Valid AutorDTO dto) {
 
+
+
+
         Autor autor = autorMapper.toEntity(dto);
+
+
+
         autorService.salvar(autor);
 
         URI uri = gerarHeaderLocation(autor.getId());
@@ -37,6 +51,7 @@ public class AutorController implements GenericController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AutorDTO> obterDetalhes(@PathVariable Integer id) {
 
         Optional<Autor> autorOptional = autorService.obterPorId(id);
@@ -57,7 +72,9 @@ public class AutorController implements GenericController {
 //        return ResponseEntity.notFound().build();
     }
 
+
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> deletar(@PathVariable Integer id) {
 
 
@@ -72,6 +89,7 @@ public class AutorController implements GenericController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<List<AutorDTO>> pesquisar(@RequestParam(value = "nome", required = false) String nome, @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
 
         List<Autor> resultado = autorService.buscaByExample(nome, nacionalidade);
@@ -82,6 +100,7 @@ public class AutorController implements GenericController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> atualizar(@PathVariable("id") Integer id, @RequestBody @Valid AutorDTO dto) {
 
 
