@@ -1,16 +1,13 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Outlet, Link } from "react-router-dom";
 
-
-function App() {
-
-
+export default function App() {
   return (
-    <>
-      <h2 className='text-xl text-blue-500'>Teste</h2>
-    </>
-  )
+    <div>
+      <nav>
+        <Link to="home">Home</Link> |{" "}
+        <Link to="/auth">Sair</Link>
+      </nav>
+      <Outlet />
+    </div>
+  );
 }
-
-export default App
