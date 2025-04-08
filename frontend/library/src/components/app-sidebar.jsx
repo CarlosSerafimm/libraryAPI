@@ -15,9 +15,8 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "./ui/button";
 import { BookOpen, BookA, User, IdCard } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-// Sample data
 const data = {
   navMain: [
     {
@@ -25,7 +24,7 @@ const data = {
       url: "#",
       items: [
         { title: "Livros", url: "/livros", icon: <BookOpen size={18} /> },
-        { title: "Autores", url: "/auth", icon: <BookA size={18} /> },
+        { title: "Autores", url: "/autores", icon: <BookA size={18} /> },
         { title: "Usuarios", url: "/usuarios", icon: <User size={18} /> },
         { title: "Cargos", url: "/cargos", icon: <IdCard size={18} /> },
       ],
@@ -35,6 +34,7 @@ const data = {
 
 export function AppSidebar({ ...props }) {
   const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <Sidebar {...props} className="shadow-2xl shadow-slate-400 text-white">
@@ -89,6 +89,7 @@ export function AppSidebar({ ...props }) {
         <Button
           variant="outline"
           className="w-full bg-red-500 hover:bg-red-600 text-white border-transparent shadow"
+          onClick={() => navigate("/auth")}
         >
           Deslogar
         </Button>

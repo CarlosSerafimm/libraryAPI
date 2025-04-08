@@ -1,13 +1,23 @@
 import { useState } from "react";
 import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import InputWrapper from "../../components/InputWrapper";
+import { Link, useNavigate } from "react-router-dom";
 
 function Register({ toggle }) {
   const [senha, setSenha] = useState("");
   const [confirmaSenha, setConfirmaSenha] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const senhasIguais = senha && confirmaSenha && senha === confirmaSenha;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (senhasIguais) {
+      navigate("/livros");
+    }
+  };
 
   return (
     <div className="w-full max-w-md bg-white p-10 rounded-3xl shadow-lg flex flex-col justify-center space-y-6 transition-all duration-500">
@@ -18,7 +28,7 @@ function Register({ toggle }) {
         Preencha os campos para se cadastrar
       </p>
 
-      <form className="flex flex-col space-y-5">
+      <form className="flex flex-col space-y-5" onSubmit={handleSubmit}>
         <InputWrapper icon={User}>
           <input
             type="text"

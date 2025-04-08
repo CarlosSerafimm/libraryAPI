@@ -3,6 +3,8 @@ import App from "./App";
 import Auth from "./pages/auth/auth";
 import Livros from "./pages/livros/Livros";
 import Usuarios from "./pages/usuarios/Usuarios";
+import Autores from "./pages/autores/Autores";
+import Cargos from "./pages/cargos/Cargos";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +26,14 @@ const router = createBrowserRouter([
       {
         path: "usuarios",
         element: <Usuarios />,
+      },
+      {
+        path: "autores",
+        element: <Autores />,
+      },
+      {
+        path: "cargos",
+        element: <Cargos />,
       },
     ],
   },

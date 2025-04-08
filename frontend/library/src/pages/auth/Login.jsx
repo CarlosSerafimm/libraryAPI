@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { User, Lock, Eye, EyeOff } from "lucide-react";
 import InputWrapper from "../../components/InputWrapper";
+import { Link, useNavigate } from "react-router-dom";
 
 function Login({ toggle }) {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    navigate("/livros");
+  };
 
   return (
     <div className="w-full max-w-md bg-white p-10 rounded-3xl shadow-lg flex flex-col justify-center space-y-6 transition-all duration-500">
@@ -14,7 +21,7 @@ function Login({ toggle }) {
         Entre com seus dados para continuar
       </p>
 
-      <form className="flex flex-col space-y-5">
+      <form className="flex flex-col space-y-5" onSubmit={handleSubmit}>
         <InputWrapper icon={User}>
           <input
             type="text"
