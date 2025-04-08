@@ -25,7 +25,7 @@ const data = {
       url: "#",
       items: [
         { title: "Livros", url: "/livros", icon: <BookOpen size={18} /> },
-        { title: "Autores", url: "/autores", icon: <BookA size={18} /> },
+        { title: "Autores", url: "/auth", icon: <BookA size={18} /> },
         { title: "Usuarios", url: "/usuarios", icon: <User size={18} /> },
         { title: "Cargos", url: "/cargos", icon: <IdCard size={18} /> },
       ],
@@ -37,7 +37,7 @@ export function AppSidebar({ ...props }) {
   const location = useLocation();
 
   return (
-    <Sidebar {...props} className="shadow-lg text-white">
+    <Sidebar {...props} className="shadow-2xl shadow-slate-400 text-white">
       <SidebarHeader className="bg-slate-900 border-b border-slate-700">
         <div className="w-full flex justify-center py-6">
           <Link to="/livros">
@@ -60,7 +60,10 @@ export function AppSidebar({ ...props }) {
               <SidebarMenu>
                 {group.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={location.pathname === item.url}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={location.pathname === item.url}
+                    >
                       <Link
                         to={item.url}
                         className={`flex items-center gap-3 px-3 py-2 rounded-md text-[16px] font-medium transition-all duration-200 
