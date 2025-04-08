@@ -1,37 +1,10 @@
 package libraryApi.controllers.dto;
 
-public class ResponseRoleDTO {
-    private Integer id;
-    private String roleName;
-    private String corRgba;
+import java.util.List;
 
-    public ResponseRoleDTO(Integer id, String roleName, String corRgba) {
-        this.id = id;
-        this.roleName = roleName;
-        this.corRgba = corRgba;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
-
-    public String getCorRgba() {
-        return corRgba;
-    }
-
-    public void setCorRgba(String corRgba) {
-        this.corRgba = corRgba;
-    }
+public record ResponseRoleDTO(
+        String roleName,
+        String corRgba,
+        List<String> authorities
+) {
 }

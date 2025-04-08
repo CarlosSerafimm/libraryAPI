@@ -1,13 +1,12 @@
 package libraryApi.controllers;
 
-import libraryApi.controllers.dto.RequestRoleDTO;
+import libraryApi.controllers.dto.RequestUserRoleDTO;
 import libraryApi.controllers.dto.ResponseUsuarioDTO;
 import libraryApi.model.Usuario;
 import libraryApi.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,13 +30,13 @@ public class UsuarioController {
     }
 
     @PostMapping("/addRole")
-    public ResponseEntity<Void> adicionarRole(@RequestBody RequestRoleDTO request) {
+    public ResponseEntity<Void> adicionarRole(@RequestBody RequestUserRoleDTO request) {
         usuarioService.adicionarRoleAoUsuario(request.login(), request.roleName());
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/remRole")
-    public ResponseEntity<Void> removerRole(@RequestBody RequestRoleDTO request) {
+    @DeleteMapping("/remRole")
+    public ResponseEntity<Void> removerRole(@RequestBody RequestUserRoleDTO request) {
         usuarioService.removerRoleDoUsuario(request.login(), request.roleName());
         return ResponseEntity.noContent().build();
     }

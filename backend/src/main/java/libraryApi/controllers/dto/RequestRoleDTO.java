@@ -1,3 +1,4 @@
 package libraryApi.controllers.dto;
 
-public record RequestRoleDTO(String login, String roleName) {}
+public record RequestRoleDTO(String roleName, String corRgba) {
+}

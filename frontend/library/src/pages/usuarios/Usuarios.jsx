@@ -80,7 +80,7 @@ function Usuarios() {
 
     rolesAtuais.forEach((role) => {
       if (!rolesSelecionadas.includes(role)) {
-        axios.post("http://localhost:8080/usuarios/remRole", {
+        axios.delete("http://localhost:8080/usuarios/remRole", {
           login,
           roleName: role,
         });
