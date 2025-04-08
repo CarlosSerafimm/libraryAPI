@@ -1,4 +1,4 @@
-// components/InputWrapper.jsx
+
 import React from "react";
 
 function InputWrapper({ icon: Icon, children }) {
