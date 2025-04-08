@@ -26,6 +26,7 @@ function Cargos() {
   const [selectedCargo, setSelectedCargo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedColor, setSelectedColor] = useState("");
 
   useEffect(() => {
     fetchRoles();
@@ -59,8 +60,29 @@ function Cargos() {
     }
   };
 
+  const handleSaveChanges = async () => {
+    if (!selectedCargo) return;
+  
+    const payload = {
+      roleName: selectedCargo.name,
+      corRgba: selectedColor,
+      authorities: selectedCargo.authorities,
+    };
+  
+    try {
+      await axios.put("http://localhost:8080/roles", payload);
+      setDialogOpen(false);
+      fetchRoles();
+    } catch (error) {
+      console.error("Erro ao salvar alterações:", error);
+      alert("Erro ao salvar alterações.");
+    }
+  };
+  
+
   const handleRowClick = (cargo) => {
-    setSelectedCargo({ ...cargo }); // garantir estado isolado
+    setSelectedCargo({ ...cargo });
+    setSelectedColor(cargo.color);
     setDialogOpen(true);
   };
 
@@ -76,18 +98,18 @@ function Cargos() {
     });
   };
 
-  console.log("Cargos:", cargos);
-  console.log("Autoridades:", allAuthorities);
+  // console.log("Cargos:", cargos);
+  // console.log("Autoridades:", allAuthorities);
 
-  console.log("Cargo selecionado:", selectedCargo);
-  console.log(
-    "Autoridades do cargo selecionado:",
-    selectedCargo?.authorities ?? null
-  );
+  // console.log("Cargo selecionado:", selectedCargo);
+  // console.log(
+  //   "Autoridades do cargo selecionado:",
+  //   selectedCargo?.authorities ?? null
+  // );
   
 
   return (
-    <div className="min-h-screen py-12 px-4 bg-slate-50">
+    <div className="min-h-screen py-12 px-4">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-4xl font-extrabold text-slate-800 text-center mb-10 tracking-tight">
           Gerenciamento de Cargos
@@ -154,7 +176,7 @@ function Cargos() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Cor do Cargo
                 </label>
-                <ColorPicker color={selectedCargo.color} />
+                <ColorPicker color={selectedColor} onChange={setSelectedColor} />
               </div>
 
               <div className="border-t pt-4 space-y-2">
@@ -178,7 +200,7 @@ function Cargos() {
               </div>
 
               <div className="pt-4">
-                <Button disabled className="w-full">
+                <Button className="w-full" onClick={handleSaveChanges}>
                   Salvar alterações
                 </Button>
               </div>
