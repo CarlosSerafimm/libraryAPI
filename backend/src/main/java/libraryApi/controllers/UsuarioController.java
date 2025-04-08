@@ -1,20 +1,13 @@
 package libraryApi.controllers;
 
-import libraryApi.controllers.dto.RequestLoginDTO;
-import libraryApi.controllers.dto.RequestRegisterDTO;
-import libraryApi.controllers.mappers.UsuarioMapper;
+import libraryApi.controllers.dto.RequestRoleDTO;
+import libraryApi.controllers.dto.ResponseUsuarioDTO;
 import libraryApi.model.Usuario;
-import libraryApi.security.CustomUserDetailsService;
-import libraryApi.security.TokenService;
 import libraryApi.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,67 +16,30 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
-    @Autowired
-    private UsuarioMapper usuarioMapper;
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private TokenService tokenService;
 
 
-    @PostMapping("/register")
-    public ResponseEntity<Object> cadastrar(@RequestBody RequestRegisterDTO dto){
-        try {
+    @GetMapping
+    public ResponseEntity<Page<ResponseUsuarioDTO>> pesquisarUsuarios(
+            @RequestParam(required = false) String login,
+            @RequestParam(required = false) String roleName,
+            @RequestParam(defaultValue = "0") Integer pagina,
+            @RequestParam(defaultValue = "10") Integer tamanhoPagina
+    ) {
+        Page<Usuario> usuarios = usuarioService.pesquisar(login, roleName, pagina, tamanhoPagina);
+        Page<ResponseUsuarioDTO> map = usuarios.map(ResponseUsuarioDTO::new);
+        return ResponseEntity.ok(map);
+    }
 
-            Usuario usuario = usuarioMapper.toEntity(dto);
+    @PostMapping("/addRole")
+    public ResponseEntity<Void> adicionarRole(@RequestBody RequestRoleDTO request) {
+        usuarioService.adicionarRoleAoUsuario(request.login(), request.roleName());
+        return ResponseEntity.ok().build();
+    }
 
-            System.out.println("Login: " + usuario.getLogin());
-            System.out.println("Senha: " + usuario.getSenha());
-            System.out.println("Role: " + dto.roleName());
-
-            usuarioService.salvar(usuario, dto.roleName());
-            return ResponseEntity.ok().build();
-        } catch (Exception e){
-            e.getMessage();
-        }
+    @PostMapping("/remRole")
+    public ResponseEntity<Void> removerRole(@RequestBody RequestRoleDTO request) {
+        usuarioService.removerRoleDoUsuario(request.login(), request.roleName());
         return ResponseEntity.noContent().build();
     }
-
-    @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody RequestLoginDTO requestLoginDTO) {
-        try {
-            String login = requestLoginDTO.login();
-            String senha = requestLoginDTO.senha();
-
-            Authentication authentication = autenticar(login, senha);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-
-            Usuario usuario = usuarioService.obterPorLogin(login);
-            String token = tokenService.generateToken(usuario);
-
-
-            return ResponseEntity.ok(token);
-
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(401).build();
-        }
-    }
-
-
-
-    private Authentication autenticar(String login, String senha) {
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(login);
-
-        if (!passwordEncoder.matches(senha, userDetails.getPassword())) {
-            throw new BadCredentialsException("Senha inválida");
-        }
-
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-    }
-
-
 
 }

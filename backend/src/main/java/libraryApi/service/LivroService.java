@@ -46,14 +46,6 @@ public class LivroService {
     public Page<Livro> pesquisa(String isbn, String titulo, String nomeAutor, GeneroLivro genero, Integer anoPublicacao, Integer pagina, Integer tamanhoPagina){
 
 
-        System.out.println(isbn);
-        System.out.println(titulo);
-        System.out.println(nomeAutor);
-        System.out.println(genero);
-        System.out.println(anoPublicacao);
-        System.out.println();
-        System.out.println();
-
         Specification<Livro> specs = Specification.where((root, query, criteriaBuilder) -> criteriaBuilder.conjunction());
         if (isbn!= null){
             specs = specs.and(LivroSpecs.isbnEqual(isbn));

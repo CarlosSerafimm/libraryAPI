@@ -11,9 +11,9 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column
+    @Column(nullable = false, unique = true)
     private String login;
-    @Column
+    @Column(nullable = false)
     private String senha;
 
     @ManyToMany(fetch = FetchType.EAGER)

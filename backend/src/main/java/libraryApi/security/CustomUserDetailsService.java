@@ -1,7 +1,7 @@
 package libraryApi.security;
 
 import libraryApi.model.Usuario;
-import libraryApi.service.UsuarioService;
+import libraryApi.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,16 +13,16 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UsuarioService usuarioService;
+    private AuthService authService;
 
-    public CustomUserDetailsService(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
+    public CustomUserDetailsService(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
 
-        Usuario usuario = usuarioService.obterPorLogin(login);
+        Usuario usuario = authService.obterPorLogin(login);
         if (usuario == null) throw new UsernameNotFoundException("Usuario não encontrado");
 
         String[] roles = usuario.getRoles().stream()

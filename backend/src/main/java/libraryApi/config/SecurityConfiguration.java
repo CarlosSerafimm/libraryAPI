@@ -2,12 +2,11 @@ package libraryApi.config;
 
 import libraryApi.security.CustomUserDetailsService;
 import libraryApi.security.SecurityFilter;
-import libraryApi.service.UsuarioService;
+import libraryApi.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,15 +31,16 @@ public class SecurityConfiguration {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> {
-                    authorize.requestMatchers(HttpMethod.POST,"/usuarios/**").permitAll();
+                    authorize.requestMatchers(HttpMethod.POST,"/auth/**").permitAll();
+                    authorize.requestMatchers("/usuarios/**").permitAll();
                     authorize.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
     @Bean
-    public UserDetailsService userDetailsService(UsuarioService usuarioService){
-        return new CustomUserDetailsService(usuarioService);
+    public UserDetailsService userDetailsService(AuthService authService){
+        return new CustomUserDetailsService(authService);
 
     }
 
