@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -25,14 +27,15 @@ public class CustomUserDetailsService implements UserDetailsService {
         Usuario usuario = authService.obterPorLogin(login);
         if (usuario == null) throw new UsernameNotFoundException("Usuario não encontrado");
 
-        String[] roles = usuario.getRoles().stream()
-                .map(role -> role.getRoleName())
-                .toArray(String[]::new);
+        List<String> authorities = usuario.getRoles().stream()
+                .flatMap(role -> role.getAuthorities().stream())
+                .map(authority -> authority.getName())
+                .toList();
 
         return User.builder()
                 .username(usuario.getLogin())
                 .password(usuario.getSenha())
-                .roles(roles)
+                .authorities(authorities.toArray(new String[0]))
                 .build();
     }
 }

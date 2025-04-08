@@ -175,14 +175,6 @@ function Usuarios() {
                       <Pencil size={16} />
                       Editar
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex gap-1 text-red-600 border-red-600 hover:bg-red-50"
-                    >
-                      <Trash2 size={16} />
-                      Excluir
-                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
