@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { User, Pencil, Trash2, Search } from "lucide-react";
-import ColorPicker from "@/components/ColorPicker";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import {
@@ -18,6 +17,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import api from "@/api";
+import { toast } from "sonner";
 
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
@@ -25,10 +26,11 @@ function Usuarios() {
   const [modalAberto, setModalAberto] = useState(false);
   const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
   const [rolesSelecionadas, setRolesSelecionadas] = useState([]);
+  const [salvando, setSalvando] = useState(false);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/usuarios")
+    api
+      .get("/usuarios")
       .then((response) => {
         const data = response.data.content;
 
@@ -65,30 +67,41 @@ function Usuarios() {
     );
   };
 
-  const salvarRoles = () => {
+  const salvarRoles = async () => {
+    setSalvando(true);
+  
     const login = usuarioSelecionado.login;
     const rolesAtuais = usuarioSelecionado.roles.map((r) => r.roleName);
-
-    rolesSelecionadas.forEach((role) => {
-      if (!rolesAtuais.includes(role)) {
-        axios.post("http://localhost:8080/usuarios/addRole", {
-          login,
-          roleName: role,
-        });
+  
+    try {
+      for (const role of rolesSelecionadas) {
+        if (!rolesAtuais.includes(role.toUpperCase())) {
+          await api.post("/usuarios/addRole", {
+            login,
+            roleName: role.toUpperCase(),
+          });
+        }
       }
-    });
-
-    rolesAtuais.forEach((role) => {
-      if (!rolesSelecionadas.includes(role)) {
-        axios.delete("http://localhost:8080/usuarios/remRole", {
-          login,
-          roleName: role,
-        });
+  
+      for (const role of rolesAtuais) {
+        if (!rolesSelecionadas.includes(role.toUpperCase())) {
+          await api.delete("/usuarios/remRole", {
+            data: {
+              login,
+              roleName: role.toUpperCase(),
+            },
+          });
+        }
       }
-    });
-
-    setModalAberto(false);
-    window.location.reload();
+  
+      setModalAberto(false);
+      window.location.reload(); // mantém a atualização da lista
+    } catch (error) {
+      console.error("Erro ao salvar roles:", error);
+      // Se quiser, pode exibir uma mensagem de erro na interface
+    } finally {
+      setSalvando(false);
+    }
   };
 
   return (
@@ -215,9 +228,14 @@ function Usuarios() {
 
             <Button
               onClick={salvarRoles}
-              className="mt-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md"
+              disabled={salvando}
+              className={`mt-6 text-white rounded-lg shadow-md ${
+                salvando
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
             >
-              Salvar
+              {salvando ? "Salvando..." : "Salvar"}
             </Button>
           </div>
         </DialogContent>

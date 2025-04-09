@@ -19,7 +19,7 @@ public class UsuarioController {
 
 
     @GetMapping
-//    @PreAuthorize("hasAuthority('usuario:search')")
+    @PreAuthorize("hasAuthority('usuario:search')")
     public ResponseEntity<Page<ResponseUsuarioDTO>> pesquisarUsuarios(
             @RequestParam(required = false) String login,
             @RequestParam(required = false) String roleName,
@@ -32,16 +32,20 @@ public class UsuarioController {
     }
 
     @PostMapping("/addRole")
-//    @PreAuthorize("hasAuthority('usuario:addRole')")
+    @PreAuthorize("hasAuthority('usuario:addRole')")
     public ResponseEntity<Void> adicionarRole(@RequestBody RequestUserRoleDTO request) {
-        usuarioService.adicionarRoleAoUsuario(request.login(), request.roleName());
+        String login = request.login();
+        String roleName = request.roleName().toUpperCase();
+        usuarioService.adicionarRoleAoUsuario(login, roleName);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/remRole")
-//    @PreAuthorize("hasAuthority('usuario:removeRole')")
+    @PreAuthorize("hasAuthority('usuario:removeRole')")
     public ResponseEntity<Void> removerRole(@RequestBody RequestUserRoleDTO request) {
-        usuarioService.removerRoleDoUsuario(request.login(), request.roleName());
+        String login = request.login();
+        String roleName = request.roleName().toUpperCase();
+        usuarioService.removerRoleDoUsuario(login, roleName);
         return ResponseEntity.noContent().build();
     }
 

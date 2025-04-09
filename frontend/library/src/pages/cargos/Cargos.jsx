@@ -18,7 +18,8 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import ColorPicker from "@/components/ColorPicker"; // ajuste o path conforme seu projeto
+import ColorPicker from "@/components/ColorPicker";
+import api from "@/api";
 
 function Cargos() {
   const [cargos, setCargos] = useState([]);
@@ -35,7 +36,7 @@ function Cargos() {
 
   const fetchRoles = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/roles");
+      const res = await api.get("/roles");
       const roles = res.data.map((role, index) => ({
         id: index,
         name: role.roleName,
@@ -52,7 +53,7 @@ function Cargos() {
 
   const fetchAuthorities = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/authority");
+      const res = await api.get("/authority");
       const authorities = res.data.map((a) => a.name);
       setAllAuthorities(authorities);
     } catch (err) {
@@ -70,7 +71,7 @@ function Cargos() {
     };
   
     try {
-      await axios.put("http://localhost:8080/roles", payload);
+      await api.put("/roles", payload);
       setDialogOpen(false);
       fetchRoles();
     } catch (error) {

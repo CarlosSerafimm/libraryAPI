@@ -17,6 +17,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -65,7 +67,8 @@ public class AuthController {
             String token = tokenService.generateToken(usuario);
 
 
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok(Collections.singletonMap("token", token));
+
 
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(401).build();

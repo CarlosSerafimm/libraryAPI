@@ -1,15 +1,33 @@
 import { useState } from "react";
 import { User, Lock, Eye, EyeOff } from "lucide-react";
 import InputWrapper from "../../components/InputWrapper";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Login({ toggle }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [login, setLogin] = useState("");
+  const [senha, setSenha] = useState("");
   const navigate = useNavigate();
-  const handleSubmit = (e) => {
+
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    navigate("/livros");
+    try {
+      const response = await axios.post("http://localhost:8080/auth/login", {
+        login,
+        senha,
+      });
+
+      const { token } = response.data;
+      console.log(token);
+
+      localStorage.setItem("token", token);
+      navigate("/livros");
+    } catch (error) {
+      console.error("Erro ao fazer login:", error);
+      alert("Credenciais inválidas ou erro no servidor.");
+    }
   };
 
   return (
@@ -21,12 +39,14 @@ function Login({ toggle }) {
         Entre com seus dados para continuar
       </p>
 
-      <form className="flex flex-col space-y-5" onSubmit={handleSubmit}>
+      <form className="flex flex-col space-y-5" onSubmit={handleLogin}>
         <InputWrapper icon={User}>
           <input
             type="text"
             placeholder="Usuário"
             className="flex-1 bg-transparent outline-none text-gray-700"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
           />
         </InputWrapper>
 
@@ -35,6 +55,8 @@ function Login({ toggle }) {
             type={showPassword ? "text" : "password"}
             placeholder="Senha"
             className="flex-1 bg-transparent outline-none text-gray-700"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
           />
           <button
             type="button"

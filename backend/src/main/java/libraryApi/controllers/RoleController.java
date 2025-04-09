@@ -24,7 +24,7 @@ public class RoleController {
     private RoleMapper roleMapper;
 
     @PostMapping
-//    @PreAuthorize("hasAuthority('role:create')")
+    @PreAuthorize("hasAuthority('role:create')")
     public ResponseEntity<Void> criarRole(@RequestBody RequestRoleDTO dto){
 
         Role role = roleMapper.requestToEntity(dto);
@@ -35,14 +35,14 @@ public class RoleController {
     }
 
     @DeleteMapping
-//    @PreAuthorize("hasAuthority('role:delete')")
+    @PreAuthorize("hasAuthority('role:delete')")
     public ResponseEntity<Void> deletar(@RequestBody RequestRoleDTO dto){
         Role role = roleMapper.requestToEntity(dto);
         roleService.remover(role);
         return ResponseEntity.noContent().build();
     }
     @GetMapping
-//    @PreAuthorize("hasAuthority('role:read')")
+    @PreAuthorize("hasAuthority('role:read')")
     public ResponseEntity<List<ResponseRoleDTO>> listarTodos() {
         List<Role> roles = roleService.listarTodos();
         List<ResponseRoleDTO> dtos = roles.stream()
@@ -52,7 +52,7 @@ public class RoleController {
         return ResponseEntity.ok(dtos);
     }
     @PutMapping
-//    @PreAuthorize("hasAuthority('role:update')")
+    @PreAuthorize("hasAuthority('role:update')")
     public ResponseEntity<?> atualizarRole(@RequestBody RequestUpdateRoleDTO dto) {
         try {
             roleService.atualizarRole(dto);

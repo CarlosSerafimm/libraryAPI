@@ -32,8 +32,6 @@ public class SecurityConfiguration {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers(HttpMethod.POST,"/auth/**").permitAll();
-                    authorize.requestMatchers("/usuarios/**").permitAll();
-                    authorize.requestMatchers("/roles/**").permitAll();
                     authorize.requestMatchers("/authority").permitAll();
                     authorize.anyRequest().authenticated();
                 })
