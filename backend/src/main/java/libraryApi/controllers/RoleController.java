@@ -24,13 +24,13 @@ public class RoleController {
     private RoleMapper roleMapper;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('role:create')")
-    public ResponseEntity<Void> criarRole(@RequestBody RequestRoleDTO dto){
+        @PreAuthorize("hasAuthority('role:create')")
+        public ResponseEntity<Void> criarRole(@RequestBody RequestRoleDTO dto){
 
-        Role role = roleMapper.requestToEntity(dto);
-        roleService.salvar(role);
+            Role role = roleMapper.requestToEntity(dto);
+            roleService.salvar(role);
 
-        return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build();
 
     }
 
@@ -63,6 +63,7 @@ public class RoleController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar role");
         }
     }
+
 
 
 }

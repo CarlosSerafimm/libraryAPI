@@ -14,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.*;
 
 @Configuration
-public class SuperAdminInitializer {
+public class InitializerConfigurator {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -58,17 +58,28 @@ public class SuperAdminInitializer {
         if (superAdminRole == null) {
             superAdminRole = new Role();
             superAdminRole.setRoleName("SUPER_ADMIN");
-            superAdminRole.setCorRgba("rgba(255, 33, 57, 1)"); // cor padrão
+            superAdminRole.setCorRgba("rgba(255, 33, 57, 1)"); // vermelho
             superAdminRole.setAuthorities(new HashSet<>(todasAuthorities));
             roleRepository.save(superAdminRole);
             System.out.println("Role SUPER_ADMIN criada com todas as authorities.");
         }
 
-        // 3. Criar Usuário SUPER_ADMIN se não existir
-        String login = "SUPER_ADMIN";
-        if (usuarioRepository.findByLogin(login) == null) {
+        // 3. Criar Role USER se não existir
+        Role userRole = roleRepository.findByRoleName("USER");
+        if (userRole == null) {
+            userRole = new Role();
+            userRole.setRoleName("USER");
+            userRole.setCorRgba("rgba(33, 150, 243, 1)"); // azul
+            userRole.setAuthorities(new HashSet<>()); // Nenhuma authority por padrão
+            roleRepository.save(userRole);
+            System.out.println("Role USER criada.");
+        }
+
+        // 4. Criar Usuário SUPER_ADMIN se não existir
+        String loginAdmin = "SUPER_ADMIN";
+        if (usuarioRepository.findByLogin(loginAdmin) == null) {
             Usuario superAdmin = new Usuario();
-            superAdmin.setLogin(login);
+            superAdmin.setLogin(loginAdmin);
             superAdmin.setSenha(passwordEncoder.encode("admin"));
             superAdmin.setRoles(List.of(superAdminRole));
             usuarioRepository.save(superAdmin);
@@ -76,5 +87,21 @@ public class SuperAdminInitializer {
         } else {
             System.out.println("Usuário SUPER_ADMIN já existe.");
         }
+
+        // 5. Criar Usuário USER se não existir
+        String loginUser = "user";
+        if (usuarioRepository.findByLogin(loginUser) == null) {
+            Usuario user = new Usuario();
+            user.setLogin(loginUser);
+            user.setSenha(passwordEncoder.encode("user"));
+            user.setRoles(List.of(userRole));
+            usuarioRepository.save(user);
+            System.out.println("Usuário USER criado com sucesso.");
+        } else {
+            System.out.println("Usuário USER já existe.");
+        }
     }
+
+
+
 }

@@ -9,9 +9,8 @@ public record RequestRegisterDTO(
         @NotBlank(message = "Campo obrigatorio")
         String login,
         @NotBlank(message = "Campo obrigatorio")
-        String senha,
-        @NotBlank(message = "Campo obrigatorio")
-        List<String> roleName
+        String senha
+
 ) {
 
 

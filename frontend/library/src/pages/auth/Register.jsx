@@ -1,21 +1,46 @@
 import { useState } from "react";
-import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Lock, Eye, EyeOff } from "lucide-react";
 import InputWrapper from "../../components/InputWrapper";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import api from "@/api";
+import axios from "axios";
 
 function Register({ toggle }) {
+  const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmaSenha, setConfirmaSenha] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [erro, setErro] = useState("");
   const navigate = useNavigate();
 
   const senhasIguais = senha && confirmaSenha && senha === confirmaSenha;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (senhasIguais) {
+    if (!senhasIguais) return;
+
+    try {
+      // 1. Registrar o usuário
+      await axios.post("http://localhost:8080/auth/login", {
+        login,
+        senha,
+      });
+
+      // 2. Fazer login com o mesmo usuário
+      const response = await axios.post("http://localhost:8080/auth/login", {
+        login,
+        senha,
+      });
+
+      const { token } = response.data;
+      console.log(token);
+
+      localStorage.setItem("token", token);
       navigate("/livros");
+    } catch (error) {
+      console.error("Erro no registro/login:", error);
+      setErro("Erro ao criar conta. Verifique os dados ou tente novamente.");
     }
   };
 
@@ -28,12 +53,19 @@ function Register({ toggle }) {
         Preencha os campos para se cadastrar
       </p>
 
+      {erro && (
+        <p className="text-center text-red-500 text-sm font-medium">{erro}</p>
+      )}
+
       <form className="flex flex-col space-y-5" onSubmit={handleSubmit}>
         <InputWrapper icon={User}>
           <input
             type="text"
             placeholder="Nome de usuário"
             className="flex-1 bg-transparent outline-none text-gray-700"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
+            required
           />
         </InputWrapper>
 
@@ -44,6 +76,7 @@ function Register({ toggle }) {
             className="flex-1 bg-transparent outline-none text-gray-700"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
+            required
           />
           <button
             type="button"
@@ -61,6 +94,7 @@ function Register({ toggle }) {
             className="flex-1 bg-transparent outline-none text-gray-700"
             value={confirmaSenha}
             onChange={(e) => setConfirmaSenha(e.target.value)}
+            required
           />
         </InputWrapper>
 

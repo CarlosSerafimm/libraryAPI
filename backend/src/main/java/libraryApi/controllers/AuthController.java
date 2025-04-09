@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -43,9 +44,10 @@ public class AuthController {
 
             System.out.println("Login: " + usuario.getLogin());
             System.out.println("Senha: " + usuario.getSenha());
-            System.out.println("Role: " + dto.roleName());
+            List<String> roles = List.of("USER");
 
-            authService.register(usuario, dto.roleName());
+            authService.register(usuario, roles);
+
             return ResponseEntity.ok().build();
         } catch (Exception e){
             e.getMessage();

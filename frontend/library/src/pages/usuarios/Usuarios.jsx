@@ -29,29 +29,26 @@ function Usuarios() {
   const [salvando, setSalvando] = useState(false);
 
   useEffect(() => {
-    api
-      .get("/usuarios")
-      .then((response) => {
-        const data = response.data.content;
-
-        const todosCargos = new Set();
-        data.forEach((user) => {
-          user.roles.forEach((role) => todosCargos.add(JSON.stringify(role)));
-        });
-
-        const listaCargos = Array.from(todosCargos).map((item) => {
-          const parsed = JSON.parse(item);
-          return {
-            name: parsed.roleName,
-            color: parsed.corRgba,
-          };
-        });
-
+    const fetchData = async () => {
+      try {
+        const usuariosResponse = await api.get("/usuarios");
+        const data = usuariosResponse.data.content;
         setUsuarios(data);
-        setCargos(listaCargos);
-      })
-      .catch((error) => console.error("Erro ao buscar usuários:", error));
+  
+        const rolesResponse = await api.get("/roles");
+        const roles = rolesResponse.data.map((role) => ({
+          name: role.roleName,
+          color: role.corRgba,
+        }));
+        setCargos(roles);
+      } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+      }
+    };
+  
+    fetchData();
   }, []);
+  
 
   const abrirModal = (user) => {
     setUsuarioSelecionado(user);
@@ -95,10 +92,9 @@ function Usuarios() {
       }
   
       setModalAberto(false);
-      window.location.reload(); // mantém a atualização da lista
+      window.location.reload();
     } catch (error) {
       console.error("Erro ao salvar roles:", error);
-      // Se quiser, pode exibir uma mensagem de erro na interface
     } finally {
       setSalvando(false);
     }
