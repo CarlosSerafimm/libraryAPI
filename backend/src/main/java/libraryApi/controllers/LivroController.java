@@ -29,7 +29,7 @@ public class LivroController implements GenericController {
     private LivroMapper livroMapper;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('livro:create')")
+//    @PreAuthorize("hasAuthority('livro:create')")
     public ResponseEntity<Object> salvar(@RequestBody @Valid RequestLivroDTO dto) {
         try {
 
@@ -46,7 +46,7 @@ public class LivroController implements GenericController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('livro:read')")
+//    @PreAuthorize("hasAuthority('livro:read')")
     public ResponseEntity<ResponseLivroDTO> obterDetalhes(@PathVariable("id") Integer id) {
 
         return livroService.obterPorId(id).map(livro -> {
@@ -56,7 +56,7 @@ public class LivroController implements GenericController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('livro:delete')")
+//    @PreAuthorize("hasAuthority('livro:delete')")
     public ResponseEntity<Object> deletar(@PathVariable("id") Integer id) {
         return livroService.obterPorId(id).map(livro -> {
             livroService.deletar(id);
@@ -65,7 +65,7 @@ public class LivroController implements GenericController {
     }
 
     @GetMapping("/")
-    @PreAuthorize("hasAuthority('livro:search')")
+//    @PreAuthorize("hasAuthority('livro:search')")
     public ResponseEntity<Page<ResponseLivroDTO>> pesquisa(
             @RequestParam(value = "isbn", required = false) String isbn,
             @RequestParam(value = "titulo", required = false) String titulo,
@@ -86,7 +86,7 @@ public class LivroController implements GenericController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('livro:update')")
+//    @PreAuthorize("hasAuthority('livro:update')")
     public ResponseEntity<Object> atualizar(@PathVariable Integer id, @RequestBody @Valid RequestLivroDTO dto) {
         return livroService.obterPorId(id).map(livro -> {
             Livro entityAux = livroMapper.toEntity(dto);

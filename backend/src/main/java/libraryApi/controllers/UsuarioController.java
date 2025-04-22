@@ -19,7 +19,7 @@ public class UsuarioController {
 
 
     @GetMapping
-    @PreAuthorize("hasAuthority('usuario:search')")
+//    @PreAuthorize("hasAuthority('usuario:search')")
     public ResponseEntity<Page<ResponseUsuarioDTO>> pesquisarUsuarios(
             @RequestParam(required = false) String login,
             @RequestParam(required = false) String roleName,
@@ -32,7 +32,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/addRole")
-    @PreAuthorize("hasAuthority('usuario:addRole')")
+//    @PreAuthorize("hasAuthority('usuario:addRole')")
     public ResponseEntity<Void> adicionarRole(@RequestBody RequestUserRoleDTO request) {
         String login = request.login();
         String roleName = request.roleName().toUpperCase();
@@ -41,7 +41,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/remRole")
-    @PreAuthorize("hasAuthority('usuario:removeRole')")
+//    @PreAuthorize("hasAuthority('usuario:removeRole')")
     public ResponseEntity<Void> removerRole(@RequestBody RequestUserRoleDTO request) {
         String login = request.login();
         String roleName = request.roleName().toUpperCase();

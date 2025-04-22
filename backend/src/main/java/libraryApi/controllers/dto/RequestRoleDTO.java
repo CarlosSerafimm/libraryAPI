@@ -1,4 +1,6 @@
 package libraryApi.controllers.dto;
 
-public record RequestRoleDTO(String roleName, String corRgba) {
+import java.util.List;
+
+public record RequestRoleDTO(String roleName, String corRgba, List<String> authorities) {
 }

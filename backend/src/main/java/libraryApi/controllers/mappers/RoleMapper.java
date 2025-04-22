@@ -12,6 +12,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = AuthorityMapperHelper.class)
 public interface RoleMapper {
 
+    @Mapping(target = "authorities", source = "authorities", qualifiedByName = "mapAuthoritiesToEntities")
     Role requestToEntity(RequestRoleDTO dto);
 
     @Mapping(target = "authorities", source = "authorities", qualifiedByName = "mapAuthoritiesToNames")
@@ -19,3 +20,4 @@ public interface RoleMapper {
 
     List<ResponseRoleDTO> toResponseList(List<Role> roles);
 }
+

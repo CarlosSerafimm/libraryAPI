@@ -24,25 +24,17 @@ public class RoleController {
     private RoleMapper roleMapper;
 
     @PostMapping
-        @PreAuthorize("hasAuthority('role:create')")
-        public ResponseEntity<Void> criarRole(@RequestBody RequestRoleDTO dto){
+//    @PreAuthorize("hasAuthority('role:create')")
+    public ResponseEntity<Void> criarRole(@RequestBody RequestRoleDTO dto){
 
-            Role role = roleMapper.requestToEntity(dto);
-            roleService.salvar(role);
-
-            return ResponseEntity.ok().build();
-
-    }
-
-    @DeleteMapping
-    @PreAuthorize("hasAuthority('role:delete')")
-    public ResponseEntity<Void> deletar(@RequestBody RequestRoleDTO dto){
         Role role = roleMapper.requestToEntity(dto);
-        roleService.remover(role);
-        return ResponseEntity.noContent().build();
+        roleService.salvar(role);
+
+        return ResponseEntity.ok().build();
+
     }
     @GetMapping
-    @PreAuthorize("hasAuthority('role:read')")
+//    @PreAuthorize("hasAuthority('role:read')")
     public ResponseEntity<List<ResponseRoleDTO>> listarTodos() {
         List<Role> roles = roleService.listarTodos();
         List<ResponseRoleDTO> dtos = roles.stream()
@@ -51,11 +43,21 @@ public class RoleController {
 
         return ResponseEntity.ok(dtos);
     }
-    @PutMapping
-    @PreAuthorize("hasAuthority('role:update')")
-    public ResponseEntity<?> atualizarRole(@RequestBody RequestUpdateRoleDTO dto) {
+
+    @DeleteMapping("/{id}")
+// @PreAuthorize("hasAuthority('role:delete')")
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+        roleService.remover(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
+    @PutMapping("/{id}")
+// @PreAuthorize("hasAuthority('role:update')")
+    public ResponseEntity<?> atualizarRole(@PathVariable Integer id, @RequestBody RequestUpdateRoleDTO dto) {
         try {
-            roleService.atualizarRole(dto);
+            roleService.atualizarRole(id, dto);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Role não encontrada");
@@ -63,6 +65,7 @@ public class RoleController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar role");
         }
     }
+
 
 
 

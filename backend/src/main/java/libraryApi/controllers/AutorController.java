@@ -27,7 +27,7 @@ public class AutorController implements GenericController {
 
 
     @PostMapping
-    @PreAuthorize("hasAuthority('autor:create')")
+//    @PreAuthorize("hasAuthority('autor:create')")
     public ResponseEntity<Object> salvar(@RequestBody @Valid AutorDTO dto) {
 
 
@@ -46,7 +46,7 @@ public class AutorController implements GenericController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('autor:read')")
+//    @PreAuthorize("hasAuthority('autor:read')")
     public ResponseEntity<AutorDTO> obterDetalhes(@PathVariable Integer id) {
 
         Optional<Autor> autorOptional = autorService.obterPorId(id);
@@ -69,7 +69,7 @@ public class AutorController implements GenericController {
 
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('autor:delete')")
+//    @PreAuthorize("hasAuthority('autor:delete')")
     public ResponseEntity<Object> deletar(@PathVariable Integer id) {
 
 
@@ -84,7 +84,7 @@ public class AutorController implements GenericController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('autor:search')")
+//    @PreAuthorize("hasAuthority('autor:search')")
     public ResponseEntity<List<AutorDTO>> pesquisar(@RequestParam(value = "nome", required = false) String nome, @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
 
         List<Autor> resultado = autorService.buscaByExample(nome, nacionalidade);
@@ -95,7 +95,7 @@ public class AutorController implements GenericController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('autor:update')")
+//    @PreAuthorize("hasAuthority('autor:update')")
     public ResponseEntity<Object> atualizar(@PathVariable("id") Integer id, @RequestBody @Valid AutorDTO dto) {
 
 

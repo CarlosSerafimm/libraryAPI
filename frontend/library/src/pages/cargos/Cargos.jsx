@@ -28,6 +28,7 @@ function Cargos() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     fetchRoles();
@@ -37,11 +38,11 @@ function Cargos() {
   const fetchRoles = async () => {
     try {
       const res = await api.get("/roles");
-      const roles = res.data.map((role, index) => ({
-        id: index,
+      const roles = res.data.map((role) => ({
+        id: role.id,
         name: role.roleName,
         color: role.corRgba,
-        authorities: role.authorities, 
+        authorities: role.authorities,
       }));
       setCargos(roles);
     } catch (err) {
@@ -70,8 +71,16 @@ function Cargos() {
       authorities: selectedCargo.authorities,
     };
   
+    console.log("Payload: ", payload); 
+    console.log("Authorities selecionadas:", selectedCargo.authorities);
+
+  
     try {
-      await api.put("/roles", payload);
+      if (isEditing && selectedCargo.id !== undefined) {
+        await api.put(`/roles/${selectedCargo.id}`, payload);
+      } else {
+        const res = await api.post("/roles", payload);
+      }
       setDialogOpen(false);
       fetchRoles();
     } catch (error) {
@@ -81,9 +90,50 @@ function Cargos() {
   };
   
 
+  const handleNameChange = (e) => {
+    const updatedName = e.target.value;
+    setSelectedCargo((prev) => ({
+      ...prev,
+      name: updatedName,
+    }));
+    
+  };
+
+  const handleDeleteCargo = async (cargo) => {
+    const confirm = window.confirm(`Deseja excluir o cargo "${cargo.name}"?`);
+    if (!confirm) return;
+
+    if (!cargo.id) {
+      console.warn("ID do cargo indefinido, não é possível excluir.");
+      return;
+    }
+
+    try {
+      await api.delete(`/roles/${cargo.id}`);
+      fetchRoles();
+    } catch (err) {
+      console.error("Erro ao excluir cargo:", err);
+      alert("Erro ao excluir cargo.");
+    }
+  };
+
   const handleRowClick = (cargo) => {
     setSelectedCargo({ ...cargo });
     setSelectedColor(cargo.color);
+    setIsEditing(true);
+    setDialogOpen(true);
+  };
+
+  const handleCreateCargo = () => {
+    setSelectedCargo({
+      id: undefined,
+      name: "",
+      color: "rgba(0,0,0,1)",
+      authorities: [],
+    });
+
+    setSelectedColor("rgba(0,0,0,1)");
+    setIsEditing(false);
     setDialogOpen(true);
   };
 
@@ -99,22 +149,20 @@ function Cargos() {
     });
   };
 
-  // console.log("Cargos:", cargos);
-  // console.log("Autoridades:", allAuthorities);
-
-  // console.log("Cargo selecionado:", selectedCargo);
-  // console.log(
-  //   "Autoridades do cargo selecionado:",
-  //   selectedCargo?.authorities ?? null
-  // );
-  
-
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-4xl font-extrabold text-slate-800 text-center mb-10 tracking-tight">
           Gerenciamento de Cargos
         </h1>
+        <div className="flex justify-end mb-4">
+          <Button
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-sm"
+            onClick={handleCreateCargo}
+          >
+            Criar novo cargo
+          </Button>
+        </div>
 
         <Card className="shadow-xl rounded-2xl border border-slate-200">
           <CardContent className="p-6">
@@ -133,21 +181,32 @@ function Cargos() {
                   {cargos.map((cargo) => (
                     <TableRow
                       key={cargo.id}
-                      className="hover:bg-slate-100 transition-colors duration-200 cursor-pointer"
-                      onClick={() => handleRowClick(cargo)}
+                      className="hover:bg-slate-100 transition-colors duration-200"
                     >
                       <TableCell className="py-4">
                         <motion.div
                           whileHover={{ scale: 1.02 }}
-                          className="flex items-center gap-3"
+                          className="flex items-center justify-between gap-3"
                         >
-                          <span
-                            className="w-3.5 h-3.5 rounded-full"
-                            style={{ backgroundColor: cargo.color }}
-                          />
-                          <span className="text-slate-800 font-medium text-base">
-                            {cargo.name}
-                          </span>
+                          <div
+                            className="flex items-center gap-3 cursor-pointer"
+                            onClick={() => handleRowClick(cargo)}
+                          >
+                            <span
+                              className="w-3.5 h-3.5 rounded-full"
+                              style={{ backgroundColor: cargo.color }}
+                            />
+                            <span className="text-slate-800 font-medium text-base">
+                              {cargo.name}
+                            </span>
+                          </div>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteCargo(cargo)}
+                          >
+                            Excluir
+                          </Button>
                         </motion.div>
                       </TableCell>
                     </TableRow>
@@ -169,7 +228,12 @@ function Cargos() {
                     className="w-4 h-4 rounded-full"
                     style={{ backgroundColor: selectedCargo.color }}
                   />
-                  {selectedCargo.name}
+                  <input
+                    type="text"
+                    value={selectedCargo.name}
+                    onChange={handleNameChange}
+                    className="w-full text-xl font-semibold text-slate-800 bg-transparent border-b border-slate-300 focus:outline-none focus:border-slate-600"
+                  />
                 </DialogTitle>
               </DialogHeader>
 
@@ -177,7 +241,10 @@ function Cargos() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Cor do Cargo
                 </label>
-                <ColorPicker color={selectedColor} onChange={setSelectedColor} />
+                <ColorPicker
+                  color={selectedColor}
+                  onChange={setSelectedColor}
+                />
               </div>
 
               <div className="border-t pt-4 space-y-2">
