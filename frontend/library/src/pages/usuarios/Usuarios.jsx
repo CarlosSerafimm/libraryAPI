@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { User, Pencil, Trash2, Search } from "lucide-react";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -18,7 +17,13 @@ import {
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import api from "@/api";
-import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
@@ -27,28 +32,41 @@ function Usuarios() {
   const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
   const [rolesSelecionadas, setRolesSelecionadas] = useState([]);
   const [salvando, setSalvando] = useState(false);
+  const [filtroLogin, setFiltroLogin] = useState("");
+  const [filtroRole, setFiltroRole] = useState("");
+  const [paginaAtual, setPaginaAtual] = useState(0);
+  const [totalPaginas, setTotalPaginas] = useState(0);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const usuariosResponse = await api.get("/usuarios");
-        const data = usuariosResponse.data.content;
-        setUsuarios(data);
-  
+    buscarUsuarios();
+  }, []);
+
+  const buscarUsuarios = async (pagina = 0, login = "", role = "") => {
+    try {
+      const response = await api.get("/usuarios", {
+        params: {
+          login: login || undefined,
+          roleName: role || undefined,
+          pagina,
+        },
+      });
+
+      setUsuarios(response.data.content);
+      setTotalPaginas(response.data.totalPages);
+      setPaginaAtual(pagina);
+
+      if (cargos.length === 0) {
         const rolesResponse = await api.get("/roles");
         const roles = rolesResponse.data.map((role) => ({
           name: role.roleName,
           color: role.corRgba,
         }));
         setCargos(roles);
-      } catch (error) {
-        console.error("Erro ao buscar dados:", error);
       }
-    };
-  
-    fetchData();
-  }, []);
-  
+    } catch (error) {
+      console.error("Erro ao buscar usuários:", error);
+    }
+  };
 
   const abrirModal = (user) => {
     setUsuarioSelecionado(user);
@@ -66,10 +84,10 @@ function Usuarios() {
 
   const salvarRoles = async () => {
     setSalvando(true);
-  
+
     const login = usuarioSelecionado.login;
     const rolesAtuais = usuarioSelecionado.roles.map((r) => r.roleName);
-  
+
     try {
       for (const role of rolesSelecionadas) {
         if (!rolesAtuais.includes(role.toUpperCase())) {
@@ -79,7 +97,7 @@ function Usuarios() {
           });
         }
       }
-  
+
       for (const role of rolesAtuais) {
         if (!rolesSelecionadas.includes(role.toUpperCase())) {
           await api.delete("/usuarios/remRole", {
@@ -90,7 +108,7 @@ function Usuarios() {
           });
         }
       }
-  
+
       setModalAberto(false);
       window.location.reload();
     } catch (error) {
@@ -112,15 +130,46 @@ function Usuarios() {
             type="text"
             placeholder="Username"
             className="w-full sm:w-60 px-4 py-2 rounded-lg border border-slate-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={filtroLogin}
+            onChange={(e) => setFiltroLogin(e.target.value)}
           />
-          <input
-            type="text"
-            placeholder="Cargos"
-            className="w-full sm:w-60 px-4 py-2 rounded-lg border border-slate-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <Select
+            value={filtroRole}
+            onValueChange={(value) =>
+              setFiltroRole(value === "todos" ? "" : value)
+            }
+          >
+            <SelectTrigger className="w-full sm:w-60 bg-white border border-slate-300 shadow-sm rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+              <SelectValue placeholder="Todos os cargos" />
+            </SelectTrigger>
+
+            <SelectContent>
+              <SelectItem value="todos">
+                <div className="flex items-center gap-2 text-slate-700">
+                  <span className="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+                  Todos os cargos
+                </div>
+              </SelectItem>
+
+              {cargos.map((cargo) => (
+                <SelectItem key={cargo.name} value={cargo.name}>
+                  <div className="flex items-center gap-2 text-slate-700">
+                    <span
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{ backgroundColor: cargo.color || "#6b7280" }}
+                    ></span>
+                    {cargo.name}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-sm">
+        <Button
+          onClick={() => buscarUsuarios(0, filtroLogin, filtroRole)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-sm"
+        >
           <Search className="mr-2 h-4 w-4" />
           Buscar
         </Button>
@@ -191,6 +240,23 @@ function Usuarios() {
           </TableBody>
         </Table>
       </div>
+      <div className="flex justify-center items-center mt-6 gap-2 flex-wrap">
+        {[...Array(totalPaginas)].map((_, index) => (
+          <Button
+            key={index}
+            variant={paginaAtual === index ? "default" : "outline"}
+            onClick={() => buscarUsuarios(index, filtroLogin, filtroRole)}
+            className={`px-4 py-2 ${
+              paginaAtual === index
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "text-slate-700 border-slate-300 hover:bg-slate-300"
+            }`}
+          >
+            {index + 1}
+          </Button>
+        ))}
+      </div>
+
       <Dialog open={modalAberto} onOpenChange={setModalAberto}>
         <DialogContent className="max-w-md rounded-2xl p-6 shadow-2xl border border-slate-200">
           <DialogHeader>

@@ -24,7 +24,7 @@ public class UsuarioController {
             @RequestParam(required = false) String login,
             @RequestParam(required = false) String roleName,
             @RequestParam(defaultValue = "0") Integer pagina,
-            @RequestParam(defaultValue = "10") Integer tamanhoPagina
+            @RequestParam(defaultValue = "5") Integer tamanhoPagina
     ) {
         Page<Usuario> usuarios = usuarioService.pesquisar(login, roleName, pagina, tamanhoPagina);
         Page<ResponseUsuarioDTO> map = usuarios.map(ResponseUsuarioDTO::new);

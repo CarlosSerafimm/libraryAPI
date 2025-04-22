@@ -22,7 +22,7 @@ function Register({ toggle }) {
 
     try {
       // 1. Registrar o usuário
-      await axios.post("http://localhost:8080/auth/login", {
+      await axios.post("http://localhost:8080/auth/register", {
         login,
         senha,
       });
