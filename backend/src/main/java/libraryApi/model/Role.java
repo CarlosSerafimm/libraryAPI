@@ -19,6 +19,9 @@ public class Role {
     private String corRgba;
 
 
+    @Column
+    private boolean modificavel = true;
+
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     private List<Usuario> usuarios;
 
@@ -69,5 +72,13 @@ public class Role {
 
     public void setCorRgba(String corRgba) {
         this.corRgba = corRgba;
+    }
+
+    public boolean isModificavel() {
+        return modificavel;
+    }
+
+    public void setModificavel(boolean modificavel) {
+        this.modificavel = modificavel;
     }
 }

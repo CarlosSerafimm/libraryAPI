@@ -60,6 +60,7 @@ public class InitializerConfigurator {
             superAdminRole.setRoleName("SUPER_ADMIN");
             superAdminRole.setCorRgba("rgba(255, 33, 57, 1)"); // vermelho
             superAdminRole.setAuthorities(new HashSet<>(todasAuthorities));
+            superAdminRole.setModificavel(false);
             roleRepository.save(superAdminRole);
             System.out.println("Role SUPER_ADMIN criada com todas as authorities.");
         }
@@ -71,6 +72,7 @@ public class InitializerConfigurator {
             userRole.setRoleName("USER");
             userRole.setCorRgba("rgba(33, 150, 243, 1)"); // azul
             userRole.setAuthorities(new HashSet<>()); // Nenhuma authority por padrão
+            userRole.setModificavel(false);
             roleRepository.save(userRole);
             System.out.println("Role USER criada.");
         }

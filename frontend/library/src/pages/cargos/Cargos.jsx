@@ -17,7 +17,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import ColorPicker from "@/components/ColorPicker";
 import api from "@/api";
 
@@ -42,9 +41,12 @@ function Cargos() {
         id: role.id,
         name: role.roleName,
         color: role.corRgba,
+        modificavel: role.modificavel,
         authorities: role.authorities,
       }));
+      
       setCargos(roles);
+      
     } catch (err) {
       console.error("Erro ao buscar roles:", err);
     } finally {
@@ -71,8 +73,7 @@ function Cargos() {
       authorities: selectedCargo.authorities,
     };
   
-    console.log("Payload: ", payload); 
-    console.log("Authorities selecionadas:", selectedCargo.authorities);
+   
 
   
     try {
@@ -232,6 +233,7 @@ function Cargos() {
                     type="text"
                     value={selectedCargo.name}
                     onChange={handleNameChange}
+                    disabled={!selectedCargo.modificavel}
                     className="w-full text-xl font-semibold text-slate-800 bg-transparent border-b border-slate-300 focus:outline-none focus:border-slate-600"
                   />
                 </DialogTitle>
@@ -258,6 +260,7 @@ function Cargos() {
                         id={auth}
                         checked={selectedCargo.authorities.includes(auth)}
                         onCheckedChange={() => toggleAuthority(auth)}
+                        disabled={!selectedCargo.modificavel}
                       />
                       <label htmlFor={auth} className="text-sm text-slate-700">
                         {auth}
@@ -268,7 +271,7 @@ function Cargos() {
               </div>
 
               <div className="pt-4">
-                <Button className="w-full" onClick={handleSaveChanges}>
+                <Button className="w-full" onClick={handleSaveChanges} disabled={!selectedCargo.modificavel}>
                   Salvar alterações
                 </Button>
               </div>

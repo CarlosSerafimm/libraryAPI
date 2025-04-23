@@ -2,6 +2,7 @@ package libraryApi.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import libraryApi.controllers.dto.RequestUpdateRoleDTO;
+import libraryApi.exceptions.NaoModificavelException;
 import libraryApi.model.Authority;
 import libraryApi.model.Role;
 import libraryApi.model.Usuario;
@@ -50,6 +51,10 @@ public class RoleService {
     public void remover(Integer id) {
         Role existente = roleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Role com id " + id + " não encontrada."));
+
+        if (!existente.isModificavel()) {
+            throw new NaoModificavelException("Esta role não pode ser modificada.");
+        }
         for (Usuario usuario : existente.getUsuarios()) {
             usuario.getRoles().remove(existente);
         }
@@ -67,6 +72,9 @@ public class RoleService {
     public void atualizarRole(Integer id, RequestUpdateRoleDTO dto) {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Role com id " + id + " não encontrada."));
+        if (!role.isModificavel()) {
+            throw new NaoModificavelException("Esta role não pode ser modificada.");
+        }
 
         role.setRoleName(dto.roleName());
         role.setCorRgba(dto.corRgba());

@@ -3,6 +3,7 @@ package libraryApi.controllers.common;
 import libraryApi.controllers.dto.ErroCampo;
 import libraryApi.controllers.dto.ErroResposta;
 import libraryApi.exceptions.CampoInvalidoException;
+import libraryApi.exceptions.NaoModificavelException;
 import libraryApi.exceptions.OperacaoNaoPermitidaException;
 import libraryApi.exceptions.RegistroDuplicadoException;
 import org.springframework.http.HttpStatus;
@@ -61,4 +62,11 @@ public class GlobalExceptionHandler {
     public ErroResposta handleAccessDeniedExceptin(AccessDeniedException e){
         return new ErroResposta(HttpStatus.FORBIDDEN.value(), "Acesso negado", List.of());
     }
+
+    @ExceptionHandler(NaoModificavelException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErroResposta handleNaoModificavelException(NaoModificavelException e) {
+        return new ErroResposta(HttpStatus.FORBIDDEN.value(), e.getMessage(), List.of());
+    }
+
 }
