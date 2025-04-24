@@ -1,5 +1,6 @@
 package libraryApi.model;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import libraryApi.model.Role;
 
 import java.util.Set;
@@ -11,7 +12,8 @@ public class Authority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 100)
+    @Size(min = 3, max = 100, message = "Adicione um nome entre 3-100 caracteres")
     private String name;
 
     @ManyToMany(mappedBy = "authorities", fetch = FetchType.LAZY)

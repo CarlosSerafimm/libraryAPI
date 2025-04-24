@@ -1,6 +1,7 @@
 package libraryApi.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -11,9 +12,10 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 20)
+    @Size(min = 3, max = 20, message = "Adicione um login entre 3-20 caracteres")
     private String login;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 300)
     private String senha;
 
     @ManyToMany(fetch = FetchType.EAGER)

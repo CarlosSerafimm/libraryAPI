@@ -1,6 +1,7 @@
 package libraryApi.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -19,17 +20,18 @@ public class Livro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "isbn", nullable = false)
+    @Column(name = "isbn", nullable = false, length = 20)
     private String isbn;
 
-    @Column(name = "titulo", nullable = false)
+    @Column(name = "titulo", nullable = false, length = 150)
+    @Size(min = 2, max = 150, message = "Adicione um titulo entre 2-150 caracteres")
     private String titulo;
 
     @Column(name = "data_publicacao", nullable = false)
     private LocalDate dataPublicacao;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "genero", nullable = false)
+    @Column(name = "genero", nullable = false, length = 30)
     private GeneroLivro genero;
 
     @Column(name = "preco", precision = 18,scale = 2)

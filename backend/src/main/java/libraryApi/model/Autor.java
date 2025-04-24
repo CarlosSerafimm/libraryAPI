@@ -20,11 +20,11 @@ public class Autor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "nome", nullable = false)
+    @Column(name = "nome", nullable = false, length = 100)
     @Size(min = 3, max = 100, message = "Adicione um nome entre 3-100 caracteres")
     private String nome;
 
-    @Column(name = "nacionalidade", nullable = false)
+    @Column(name = "nacionalidade", nullable = false, length = 50)
     @Size(min = 2, max = 50, message = "Adicione uma nacionalidade entre 2-50 caracteres")
     private String nacionalidade;
 

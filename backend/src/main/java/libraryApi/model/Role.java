@@ -1,6 +1,8 @@
 package libraryApi.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+
 import java.util.List;
 import java.util.Set;
 
@@ -12,14 +14,15 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
+    @Size(min = 2, max = 50, message = "Adicione um nome de cargo entre 2-50 caracteres")
     private String roleName;
 
-    @Column(name = "cor_rgba")
+    @Column(name = "cor_rgba", length = 25)
     private String corRgba;
 
 
-    @Column
+    @Column(nullable = false)
     private boolean modificavel = true;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
