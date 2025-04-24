@@ -74,12 +74,27 @@ Aplicação **fullstack** para gerenciamento de uma livraria, com autenticação
 
 ### ⚙️ Opção 1: Com Docker Compose
 
-> Pré-requisitos: Docker e Docker Compose instalados
+> Pré-requisitos: Docker, Java 23 e Node.js instalados
+
+#### Banco de dados
 
 ```bash
 docker-compose up --build
 ```
+#### Backend
 
+```bash
+cd libraryAPI/backend
+./mvnw spring-boot:run
+```
+
+#### Frontend
+
+```bash
+cd libraryAPI\frontend\library
+npm install
+npm run dev
+```
 - Frontend: [http://localhost:5173](http://localhost:5173)  
 - Backend: [http://localhost:8080](http://localhost:8080)
 
