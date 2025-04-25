@@ -9,7 +9,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Trash, Search, CalendarIcon } from "lucide-react";
+import {
+  Trash,
+  Search,
+  CirclePlus,
+  Pencil,
+  UserIcon,
+  GlobeIcon,
+  CalendarIcon,
+  BookIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -20,11 +29,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Calendar } from "@/components/ui/calendar";
 
 function Autores() {
   const [autores, setAutores] = useState([]);
@@ -32,11 +36,12 @@ function Autores() {
   const [nacionalidade, setNacionalidade] = useState("");
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [autorSelecionado, setAutorSelecionado] = useState(null);
-  const [editNome, setEditNome] = useState("");
-  const [editNacionalidade, setEditNacionalidade] = useState("");
-  const [editDataNascimento, setEditDataNascimento] = useState(null);
-
-
+  const [selectNome, setSelectNome] = useState("");
+  const [selectNacionalidade, setSelectNacionalidade] = useState("");
+  const [selectDataNascimento, setSelectDataNascimento] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [detalhesDialogOpen, setDetalhesDialogOpen] = useState(false);
+  const [autorDetalhado, setAutorDetalhado] = useState(null);
 
   const aplicarFiltro = async () => {
     const params = [];
@@ -74,6 +79,43 @@ function Autores() {
       console.error("Erro ao buscar autores:", err);
     }
   };
+
+  const abrirAutor = async (autor) => {
+    console.log("abrindo autor:", autor);
+
+    try {
+      const res = await api.get(`/autores/${autor.id}`);
+      setAutorDetalhado(res.data);
+      setDetalhesDialogOpen(true);
+    } catch (err) {
+      console.error("Erro ao buscar detalhes do autor:", err);
+      alert("Erro ao buscar detalhes do autor.");
+    }
+  };
+
+  const salvarEdicao = async () => {
+    const payload = {
+      nome: selectNome,
+      nacionalidade: selectNacionalidade,
+      dataNascimento: selectDataNascimento?.toISOString().split("T")[0],
+    };
+
+    console.log("Payload:", payload);
+
+    try {
+      if (isEditing && autorSelecionado.id !== undefined) {
+        await api.put(`/autores/${autorSelecionado.id}`, payload);
+      } else {
+        await api.post(`/autores`, payload);
+      }
+      fetchAutores();
+      setEditDialogOpen(false);
+    } catch (err) {
+      console.error("Erro ao editar autor:", err);
+      alert("Erro ao salvar autor.");
+    }
+  };
+
   const handleDeleteAutor = async (autor) => {
     const confirm = window.confirm(`Deseja excluir o autor "${autor.nome}"?`);
     if (!confirm) return;
@@ -94,27 +136,21 @@ function Autores() {
 
   const abrirDialogEdicao = (autor) => {
     setAutorSelecionado(autor);
-    setEditNome(autor.nome);
-    setEditNacionalidade(autor.nacionalidade);
-    setEditDataNascimento(new Date(autor.dataNascimento));
+    setSelectNome(autor.nome);
+    setSelectNacionalidade(autor.nacionalidade);
+    setSelectDataNascimento(new Date(autor.dataNascimento));
+    setIsEditing(true);
     setEditDialogOpen(true);
   };
 
-  const salvarEdicao = async () => {
-    try {
-      await api.put(`/autores/${autorSelecionado.id}`, {
-        nome: editNome,
-        nacionalidade: editNacionalidade,
-        dataNascimento: editDataNascimento?.toISOString().split("T")[0],
-      });
-      fetchAutores();
-      setEditDialogOpen(false);
-    } catch (err) {
-      console.error("Erro ao editar autor:", err);
-      alert("Erro ao salvar autor.");
-    }
+  const abrirDialogCriacao = () => {
+    setAutorSelecionado(null);
+    setSelectNome("");
+    setSelectNacionalidade("");
+    setSelectDataNascimento(null);
+    setIsEditing(false);
+    setEditDialogOpen(true);
   };
-  
 
   return (
     <motion.div
@@ -152,14 +188,22 @@ function Autores() {
             onChange={(e) => setNacionalidade(e.target.value)}
           />
         </div>
-
-        <Button
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg transition-all"
-          onClick={aplicarFiltro}
-        >
-          <Search className="mr-2 h-4 w-4" />
-          Buscar
-        </Button>
+        <div className="gap-3 flex items-center justify-end w-full sm:w-auto">
+          <Button
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg transition-all"
+            onClick={aplicarFiltro}
+          >
+            <Search className="mr-2 h-4 w-4" />
+            Buscar
+          </Button>
+          <Button
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg transition-all"
+            onClick={abrirDialogCriacao}
+          >
+            <CirclePlus className="mr-2 h-4 w-4" />
+            Criar novo cargo
+          </Button>
+        </div>
       </motion.div>
 
       <motion.div
@@ -187,7 +231,8 @@ function Autores() {
             {autores.map((autor, index) => (
               <TableRow
                 key={index}
-                className="hover:bg-slate-50 transition-colors"
+                className="hover:bg-slate-50 transition-colors cursor-pointer"
+                onClick={() => abrirAutor(autor)}
               >
                 <TableCell>
                   <span className="font-medium text-slate-800">
@@ -226,11 +271,11 @@ function Autores() {
         </Table>
       </motion.div>
 
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+      <Dialog open={editDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-slate-800">
-              Editar Autor
+              {isEditing ? "Editar autor" : "Criar autor"}
             </DialogTitle>
           </DialogHeader>
 
@@ -245,8 +290,8 @@ function Autores() {
               <Input
                 id="nome"
                 placeholder="Nome do autor"
-                value={editNome}
-                onChange={(e) => setEditNome(e.target.value)}
+                value={selectNome}
+                onChange={(e) => setSelectNome(e.target.value)}
               />
             </div>
 
@@ -260,8 +305,8 @@ function Autores() {
               <Input
                 id="nacionalidade"
                 placeholder="Nacionalidade"
-                value={editNacionalidade}
-                onChange={(e) => setEditNacionalidade(e.target.value)}
+                value={selectNacionalidade}
+                onChange={(e) => setSelectNacionalidade(e.target.value)}
               />
             </div>
 
@@ -269,33 +314,17 @@ function Autores() {
               <Label className="text-sm font-medium text-slate-700">
                 Data de Nascimento
               </Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !editDataNascimento && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {editDataNascimento
-                      ? format(editDataNascimento, "dd/MM/yyyy", {
-                          locale: ptBR,
-                        })
-                      : "Selecionar data"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={editDataNascimento}
-                    onSelect={setEditDataNascimento}
-                    initialFocus
-                    locale={ptBR}
-                  />
-                </PopoverContent>
-              </Popover>
+              <Input
+                type="date"
+                value={
+                  selectDataNascimento
+                    ? selectDataNascimento.toISOString().split("T")[0]
+                    : ""
+                }
+                onChange={(e) =>
+                  setSelectDataNascimento(new Date(e.target.value))
+                }
+              />
             </div>
           </div>
 
@@ -307,6 +336,75 @@ function Autores() {
               Salvar
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={detalhesDialogOpen} onOpenChange={setDetalhesDialogOpen}>
+        <DialogContent className="max-w-3xl p-6 rounded-2xl shadow-lg border border-slate-200 overflow-y-auto max-h-[80vh]">
+          {autorDetalhado && (
+            <div className="space-y-6">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                  <UserIcon className="w-6 h-6 text-slate-700" />
+                  {autorDetalhado.nome}
+                </DialogTitle>
+                <p className="text-slate-500 text-sm">
+                  Detalhes completos do autor
+                </p>
+              </DialogHeader>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-700">
+                <div className="flex items-center gap-2">
+                  <GlobeIcon className="w-4 h-4 text-slate-500" />
+                  <span>
+                    <strong>Nacionalidade:</strong>{" "}
+                    {autorDetalhado.nacionalidade}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CalendarIcon className="w-4 h-4 text-slate-500" />
+                  <span>
+                    <strong>Data de Nascimento:</strong>{" "}
+                    {autorDetalhado.dataNascimento}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                  <BookIcon className="w-5 h-5 text-slate-700" />
+                  Livros Publicados
+                </h3>
+
+                {autorDetalhado.livros.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 overflow-y-auto max-h-[300px]">
+                    {autorDetalhado.livros.map((livro) => (
+                      <div
+                        key={livro.id}
+                        className="p-4 rounded-lg border border-slate-200 hover:shadow transition"
+                      >
+                        <p className="text-base font-medium text-slate-800">
+                          {livro.titulo}
+                        </p>
+                        <p className="text-sm text-slate-600">
+                          ISBN: <span className="font-mono">{livro.isbn}</span>{" "}
+                          | Gênero: {livro.genero}
+                        </p>
+                        <p className="text-sm text-slate-600">
+                          Publicado em: {livro.dataPublicacao} | Preço: R${" "}
+                          {livro.preco}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-slate-500 text-sm">
+                    Este autor ainda não possui livros cadastrados.
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </motion.div>

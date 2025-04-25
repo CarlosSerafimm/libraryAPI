@@ -2,14 +2,13 @@ package libraryApi.controllers;
 
 
 import jakarta.validation.Valid;
-import libraryApi.controllers.dto.AutorByIdDTO;
+import libraryApi.controllers.dto.AutorGetDTO;
 import libraryApi.controllers.dto.AutorDTO;
 import libraryApi.controllers.mappers.AutorMapper;
 import libraryApi.model.Autor;
 import libraryApi.service.AutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -31,13 +30,7 @@ public class AutorController implements GenericController {
 //    @PreAuthorize("hasAuthority('autor:create')")
     public ResponseEntity<Object> salvar(@RequestBody @Valid AutorDTO dto) {
 
-
-
-
         Autor autor = autorMapper.toEntity(dto);
-
-
-
         autorService.salvar(autor);
 
         URI uri = gerarHeaderLocation(autor.getId());
@@ -48,12 +41,12 @@ public class AutorController implements GenericController {
 
     @GetMapping("/{id}")
 //    @PreAuthorize("hasAuthority('autor:read')")
-    public ResponseEntity<AutorByIdDTO> obterDetalhes(@PathVariable Integer id) {
+    public ResponseEntity<AutorGetDTO> obterDetalhes(@PathVariable Integer id) {
 
         Optional<Autor> autorOptional = autorService.obterPorId(id);
 
         return autorService.obterPorId(id).map(autor -> {
-            AutorByIdDTO dto = autorMapper.toByIdDTO(autor);
+            AutorGetDTO dto = autorMapper.toGetDTO(autor);
             return ResponseEntity.ok(dto);
         }).orElseGet(() -> {
             return ResponseEntity.notFound().build();
@@ -86,11 +79,11 @@ public class AutorController implements GenericController {
 
     @GetMapping
 //    @PreAuthorize("hasAuthority('autor:search')")
-    public ResponseEntity<List<AutorDTO>> pesquisar(@RequestParam(value = "nome", required = false) String nome, @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
+    public ResponseEntity<List<AutorGetDTO>> pesquisar(@RequestParam(value = "nome", required = false) String nome, @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
 
         List<Autor> resultado = autorService.buscaByExample(nome, nacionalidade);
 
-        List<AutorDTO> lista = resultado.stream().map(autorMapper::toDTO).collect(Collectors.toList());
+        List<AutorGetDTO> lista = resultado.stream().map(autorMapper::toGetDTO).collect(Collectors.toList());
 
         return ResponseEntity.ok(lista);
     }
