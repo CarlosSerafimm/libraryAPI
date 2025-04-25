@@ -2,6 +2,7 @@ package libraryApi.controllers;
 
 
 import jakarta.validation.Valid;
+import libraryApi.controllers.dto.AutorByIdDTO;
 import libraryApi.controllers.dto.AutorDTO;
 import libraryApi.controllers.mappers.AutorMapper;
 import libraryApi.model.Autor;
@@ -47,12 +48,12 @@ public class AutorController implements GenericController {
 
     @GetMapping("/{id}")
 //    @PreAuthorize("hasAuthority('autor:read')")
-    public ResponseEntity<AutorDTO> obterDetalhes(@PathVariable Integer id) {
+    public ResponseEntity<AutorByIdDTO> obterDetalhes(@PathVariable Integer id) {
 
         Optional<Autor> autorOptional = autorService.obterPorId(id);
 
         return autorService.obterPorId(id).map(autor -> {
-            AutorDTO dto = autorMapper.toDTO(autor);
+            AutorByIdDTO dto = autorMapper.toByIdDTO(autor);
             return ResponseEntity.ok(dto);
         }).orElseGet(() -> {
             return ResponseEntity.notFound().build();

@@ -2,17 +2,18 @@ package libraryApi.controllers.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import libraryApi.model.Autor;
 
 import java.time.LocalDate;
+import java.util.List;
 
-public record AutorDTO(
+public record AutorByIdDTO(
         Integer id,
         @NotBlank(message = "Campo obrigatório")
         String nome,
         @NotNull(message = "Campo obrigatório")
         LocalDate dataNascimento,
         @NotBlank(message = "Campo obrigatório")
-        String nacionalidade) {
-
+        String nacionalidade,
+        List<LivroByAutorDTO> livros
+) {
 }
