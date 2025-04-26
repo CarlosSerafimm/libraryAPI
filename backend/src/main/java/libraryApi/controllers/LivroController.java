@@ -35,7 +35,7 @@ public class LivroController implements GenericController {
 
             Livro livro = livroMapper.toEntity(dto);
             livroService.salvar(livro);
-
+            System.out.println(livro.getId());
             URI uri = gerarHeaderLocation(livro.getId());
 
             return ResponseEntity.created(uri).build();
@@ -90,6 +90,7 @@ public class LivroController implements GenericController {
     public ResponseEntity<Object> atualizar(@PathVariable Integer id, @RequestBody @Valid RequestLivroDTO dto) {
         return livroService.obterPorId(id).map(livro -> {
             Livro entityAux = livroMapper.toEntity(dto);
+
 
             livro.setDataPublicacao(entityAux.getDataPublicacao());
             livro.setPreco(entityAux.getPreco());

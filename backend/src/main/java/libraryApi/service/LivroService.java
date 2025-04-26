@@ -72,6 +72,7 @@ public class LivroService {
     }
 
     public void atualizar(Livro livro) {
+        System.out.println(livro.getId());
         if (livro.getId() == null){
             throw new IllegalArgumentException("Para atualizar é necessario que o livro já esteja cadastrado!");
         }

@@ -201,7 +201,7 @@ function Autores() {
             onClick={abrirDialogCriacao}
           >
             <CirclePlus className="mr-2 h-4 w-4" />
-            Criar novo cargo
+            Criar novo Autor
           </Button>
         </div>
       </motion.div>
@@ -271,7 +271,10 @@ function Autores() {
         </Table>
       </motion.div>
 
-      <Dialog open={editDialogOpen}>
+      <Dialog
+        open={editDialogOpen}
+        onOpenChange={(open) => setEditDialogOpen(open)}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-slate-800">
