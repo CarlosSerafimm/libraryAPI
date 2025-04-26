@@ -36,6 +36,7 @@ function Usuarios() {
   const [filtroRole, setFiltroRole] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(0);
   const [totalPaginas, setTotalPaginas] = useState(0);
+  const [rolesOriginais, setRolesOriginais] = useState([]);
 
   useEffect(() => {
     buscarUsuarios();
@@ -60,26 +61,13 @@ function Usuarios() {
         const roles = rolesResponse.data.map((role) => ({
           name: role.roleName,
           color: role.corRgba,
+          modificavel: role.modificavel,
         }));
         setCargos(roles);
       }
     } catch (error) {
       console.error("Erro ao buscar usuários:", error);
     }
-  };
-
-  const abrirModal = (user) => {
-    setUsuarioSelecionado(user);
-    setRolesSelecionadas(user.roles.map((r) => r.roleName));
-    setModalAberto(true);
-  };
-
-  const handleCheckboxChange = (roleName) => {
-    setRolesSelecionadas((prev) =>
-      prev.includes(roleName)
-        ? prev.filter((r) => r !== roleName)
-        : [...prev, roleName]
-    );
   };
 
   const salvarRoles = async () => {
@@ -116,6 +104,36 @@ function Usuarios() {
     } finally {
       setSalvando(false);
     }
+  };
+
+  const abrirModal = (user) => {
+    const rolesUsuario = user.roles.map((r) => r.roleName);
+    setUsuarioSelecionado(user);
+    setRolesSelecionadas(rolesUsuario);
+    setRolesOriginais(rolesUsuario);
+    setModalAberto(true);
+  };
+
+  const handleCheckboxChange = (roleName) => {
+    setRolesSelecionadas((prev) =>
+      prev.includes(roleName)
+        ? prev.filter((r) => r !== roleName)
+        : [...prev, roleName]
+    );
+  };
+
+  const houveModificacaoRoleNaoModificavel = () => {
+    for (const cargo of cargos) {
+      if (!cargo.modificavel) {
+        const estavaMarcado = rolesOriginais.includes(cargo.name);
+        const estaMarcadoAgora = rolesSelecionadas.includes(cargo.name);
+
+        if (estavaMarcado !== estaMarcadoAgora) {
+          return true; // mudou alguma role não modificável
+        }
+      }
+    }
+    return false;
   };
 
   return (
@@ -290,9 +308,9 @@ function Usuarios() {
 
             <Button
               onClick={salvarRoles}
-              disabled={salvando}
+              disabled={salvando || houveModificacaoRoleNaoModificavel()}
               className={`mt-6 text-white rounded-lg shadow-md ${
-                salvando
+                salvando || houveModificacaoRoleNaoModificavel()
                   ? "bg-blue-400 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700"
               }`}

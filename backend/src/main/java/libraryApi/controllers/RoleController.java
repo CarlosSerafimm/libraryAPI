@@ -34,7 +34,7 @@ public class RoleController {
 
     }
     @GetMapping
-//    @PreAuthorize("hasAuthority('role:read')")
+//    @PreAuthorize("hasAuthority('role:search')")
     public ResponseEntity<List<ResponseRoleDTO>> listarTodos() {
         List<Role> roles = roleService.listarTodos();
         List<ResponseRoleDTO> dtos = roles.stream()

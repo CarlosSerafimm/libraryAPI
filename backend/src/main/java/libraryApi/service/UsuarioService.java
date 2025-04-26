@@ -1,5 +1,6 @@
 package libraryApi.service;
 
+import libraryApi.exceptions.NaoModificavelException;
 import libraryApi.model.Role;
 import libraryApi.model.Usuario;
 import libraryApi.repository.RoleRepository;
@@ -45,6 +46,9 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByLogin(login);
         Role role = roleRepository.findByRoleName(roleName);
 
+        if (!role.isModificavel()) {
+            throw new NaoModificavelException("Esta role não pode ser modificada.");
+        }
         if (!usuario.getRoles().contains(role)) {
             usuario.getRoles().add(role);
             usuarioRepository.save(usuario);
@@ -54,6 +58,10 @@ public class UsuarioService {
     public void removerRoleDoUsuario(String login, String roleName) {
         Usuario usuario = usuarioRepository.findByLogin(login);
         Role role = roleRepository.findByRoleName(roleName);
+
+        if (!role.isModificavel()) {
+            throw new NaoModificavelException("Esta role não pode ser modificada.");
+        }
 
         if (usuario.getRoles().contains(role)) {
             usuario.getRoles().remove(role);

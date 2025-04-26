@@ -232,17 +232,17 @@ function Autores() {
               <TableRow
                 key={index}
                 className="hover:bg-slate-50 transition-colors cursor-pointer"
-                onClick={() => abrirAutor(autor)}
+                
               >
-                <TableCell>
+                <TableCell onClick={() => abrirAutor(autor)}>
                   <span className="font-medium text-slate-800">
                     {autor.nome}
                   </span>
                 </TableCell>
-                <TableCell>
+                <TableCell onClick={() => abrirAutor(autor)}>
                   <span className="text-slate-700">{autor.dataNascimento}</span>
                 </TableCell>
-                <TableCell>
+                <TableCell onClick={() => abrirAutor(autor)}>
                   <span className="text-slate-700">{autor.nacionalidade}</span>
                 </TableCell>
                 <TableCell className="text-right">

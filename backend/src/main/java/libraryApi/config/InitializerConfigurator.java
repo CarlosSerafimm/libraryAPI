@@ -28,14 +28,27 @@ public class InitializerConfigurator {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private static final List<String> AUTHORITIES_USER = List.of(
+        //AUTOR
+        "autor:create", "autor:search",
+        //GENERO
+        "genero:search",
+        //LIVRO
+        "livro:search"
+
+    );
     private static final List<String> AUTHORITIES = List.of(
-            // AutorController
+            //AUTHORITY
+            "authority:search",
+            //AUTOR
             "autor:create", "autor:read", "autor:delete", "autor:search", "autor:update",
-            // LivroController
+            //GENERO
+            "genero:search",
+            //LIVRO
             "livro:create", "livro:read", "livro:delete", "livro:search", "livro:update",
-            // RoleController
-            "role:create", "role:delete", "role:read",
-            // UsuarioController
+            //ROLE
+            "role:create", "role:search", "role:delete", "role:update",
+            //USUARIO
             "usuario:search", "usuario:addRole", "usuario:removeRole"
     );
 
@@ -53,7 +66,19 @@ public class InitializerConfigurator {
             todasAuthorities.add(authority);
         }
 
-        // 2. Criar Role SUPER_ADMIN se não existir
+        // 2. Criar lista de authoridades user
+        List<Authority> AuthoridadesUser = new ArrayList<>();
+        for (String authorityName : AUTHORITIES_USER) {
+            Authority authority = authorityRepository.findByName(authorityName);
+            if (authority == null) {
+                authority = new Authority();
+                authority.setName(authorityName);
+                authorityRepository.save(authority);
+            }
+            AuthoridadesUser.add(authority);
+        }
+
+        // 3. Criar Role SUPER_ADMIN se não existir
         Role superAdminRole = roleRepository.findByRoleName("SUPER_ADMIN");
         if (superAdminRole == null) {
             superAdminRole = new Role();
@@ -65,19 +90,19 @@ public class InitializerConfigurator {
             System.out.println("Role SUPER_ADMIN criada com todas as authorities.");
         }
 
-        // 3. Criar Role USER se não existir
+        // 4. Criar Role USER se não existir
         Role userRole = roleRepository.findByRoleName("USER");
         if (userRole == null) {
             userRole = new Role();
             userRole.setRoleName("USER");
             userRole.setCorRgba("rgba(33, 150, 243, 1)"); // azul
-            userRole.setAuthorities(new HashSet<>()); // Nenhuma authority por padrão
+            userRole.setAuthorities(new HashSet<>(AuthoridadesUser)); // Nenhuma authority por padrão
             userRole.setModificavel(false);
             roleRepository.save(userRole);
             System.out.println("Role USER criada.");
         }
 
-        // 4. Criar Usuário SUPER_ADMIN se não existir
+        // 5. Criar Usuário SUPER_ADMIN se não existir
         String loginAdmin = "SUPER_ADMIN";
         if (usuarioRepository.findByLogin(loginAdmin) == null) {
             Usuario superAdmin = new Usuario();
@@ -90,7 +115,7 @@ public class InitializerConfigurator {
             System.out.println("Usuário SUPER_ADMIN já existe.");
         }
 
-        // 5. Criar Usuário USER se não existir
+        // 6. Criar Usuário USER se não existir
         String loginUser = "user";
         if (usuarioRepository.findByLogin(loginUser) == null) {
             Usuario user = new Usuario();
