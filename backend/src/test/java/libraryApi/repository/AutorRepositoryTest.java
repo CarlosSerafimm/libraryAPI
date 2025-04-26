@@ -81,7 +81,7 @@ public class AutorRepositoryTest {
         Livro livro = new Livro();
         livro.setIsbn("234414");
         livro.setPreco(BigDecimal.valueOf(100));
-        livro.setGenero(GeneroLivro.ROMANSE);
+        livro.setGenero(GeneroLivro.ROMANCE);
         livro.setTitulo("Romanticos");
         livro.setDataPublicacao(LocalDate.of(1999,10,15));
         livro.setAutor(autor);

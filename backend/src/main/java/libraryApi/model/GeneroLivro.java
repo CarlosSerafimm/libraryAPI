@@ -3,7 +3,7 @@ package libraryApi.model;
 public enum GeneroLivro {
     FICCAO,
     FANTASIA,
-    ROMANSE,
+    ROMANCE,
     MISTERIO,
     BIOGRAFIA
 }

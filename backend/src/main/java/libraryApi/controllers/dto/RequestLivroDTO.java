@@ -11,7 +11,6 @@ import java.time.LocalDate;
 
 public record RequestLivroDTO(
 
-        @ISBN
         @NotBlank(message = "Campo obrigatorio")
         String isbn,
         @NotBlank(message = "Campo obrigatorio")
