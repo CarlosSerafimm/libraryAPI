@@ -2,7 +2,7 @@ spring:
   application:
     name: libraryApi
   datasource:
-    url: jdbc:mysql://localhost:3307/library  
+    url: jdbc:mysql://mysql-library:3306/library
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver

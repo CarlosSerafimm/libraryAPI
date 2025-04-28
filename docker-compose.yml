@@ -12,6 +12,28 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-
+    networks:
+      - library-network
+  backend:
+    build: ./backend
+    container_name: backend-library
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - library-network
+  frontend:
+    build: ./frontend/library
+    container_name: frontend-library
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - library-network
+networks:
+  library-network:
 volumes:
   mysql_data:
