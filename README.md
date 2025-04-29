@@ -8,7 +8,7 @@ Aplicação **fullstack** para gerenciamento de uma livraria, com autenticação
 
 ### 🔧 Backend
 
-- Java 23
+- Java 21
 - Spring Boot
 - Spring Security + JWT
 - Spring Data JPA
@@ -98,7 +98,7 @@ docker-compose up --build
 
 ### 🖥️ Opção 2: Manualmente (sem Docker)
 
-> Pré-requisitos: Java 23, Node.js, MySQL
+> Pré-requisitos: Java 21, Node.js, MySQL
 
 #### Backend
 
