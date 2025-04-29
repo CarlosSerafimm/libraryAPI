@@ -89,7 +89,10 @@ export function AppSidebar({ ...props }) {
         <Button
           variant="outline"
           className="w-full bg-red-500 hover:bg-red-600 text-white border-transparent shadow"
-          onClick={() => navigate("/auth")}
+          onClick={() => {
+            localStorage.removeItem("token");
+            window.location.reload(); 
+          }}
         >
           Deslogar
         </Button>

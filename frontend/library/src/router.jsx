@@ -5,19 +5,20 @@ import Livros from "./pages/livros/Livros";
 import Usuarios from "./pages/usuarios/Usuarios";
 import Autores from "./pages/autores/Autores";
 import Cargos from "./pages/cargos/Cargos";
+import { isTokenValid } from "./auth";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/auth" />,
+    element: <Navigate to={isTokenValid() ? "/livros" : "/auth"} />,
   },
   {
     path: "/auth",
-    element: <Auth />,
+    element: isTokenValid() ? <Navigate to="/livros" /> : <Auth />,
   },
   {
     path: "/",
-    element: <App />,
+    element: isTokenValid() ? <App /> : <Navigate to="/auth" />,
     children: [
       {
         path: "livros",

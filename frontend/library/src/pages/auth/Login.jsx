@@ -8,7 +8,6 @@ function Login({ toggle }) {
   const [showPassword, setShowPassword] = useState(false);
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
-  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,7 +22,7 @@ function Login({ toggle }) {
       console.log(token);
 
       localStorage.setItem("token", token);
-      navigate("/livros");
+      window.location.href = "/livros";
     } catch (error) {
       console.error("Erro ao fazer login:", error);
       alert("Credenciais inválidas ou erro no servidor.");
