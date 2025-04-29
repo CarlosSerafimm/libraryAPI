@@ -1,4 +1,4 @@
-# 📚 Library (em desenvolvimento)
+# 📚 Library
 
 Aplicação **fullstack** para gerenciamento de uma livraria, com autenticação segura via **JWT**, controle dinâmico de cargos e authorities, e funcionalidades completas para livros e autores.
 
