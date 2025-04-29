@@ -16,6 +16,7 @@ import {
 import { Button } from "./ui/button";
 import { BookOpen, BookA, User, IdCard } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuthorities } from "@/contexts/AuthoritiesContext";
 
 const data = {
   navMain: [
@@ -35,6 +36,24 @@ const data = {
 export function AppSidebar({ ...props }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const authorities = useAuthorities();
+
+  const hasRoleAuthority = authorities.some(
+    (auth) => typeof auth === "string" && auth.startsWith("role")
+  );
+
+  const hasUsuarioAuthority = authorities.some(
+    (auth) => typeof auth === "string" && auth.startsWith("usuario")
+  );
+
+  const filteredNavMain = data.navMain.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => {
+      if (item.url === "/usuarios" && !hasUsuarioAuthority) return false;
+      if (item.url === "/cargos" && !hasRoleAuthority) return false;
+      return true;
+    }),
+  }));
 
   return (
     <Sidebar {...props} className="shadow-2xl shadow-slate-400 text-white">
@@ -51,7 +70,7 @@ export function AppSidebar({ ...props }) {
       </SidebarHeader>
 
       <SidebarContent className="flex flex-col gap-3 px-3 py-4 bg-slate-900">
-        {data.navMain.map((group) => (
+        {filteredNavMain.map((group) => (
           <SidebarGroup key={group.title}>
             <SidebarGroupLabel className="text-sm uppercase text-slate-400 tracking-widest mb-2">
               {group.title}
@@ -91,7 +110,7 @@ export function AppSidebar({ ...props }) {
           className="w-full bg-red-500 hover:bg-red-600 text-white border-transparent shadow"
           onClick={() => {
             localStorage.removeItem("token");
-            window.location.reload(); 
+            window.location.href = "/auth";
           }}
         >
           Deslogar

@@ -1,6 +1,8 @@
 package libraryApi.service;
 
+import libraryApi.controllers.dto.ResponseAuthorityDTO;
 import libraryApi.exceptions.NaoModificavelException;
+import libraryApi.model.Authority;
 import libraryApi.model.Role;
 import libraryApi.model.Usuario;
 import libraryApi.repository.RoleRepository;
@@ -11,9 +13,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -68,5 +73,23 @@ public class UsuarioService {
             usuarioRepository.save(usuario);
         }
     }
+
+
+    public List<ResponseAuthorityDTO> getAuthoritiesByLogin(String login) {
+        Usuario usuario = usuarioRepository.findByLogin(login);
+
+        Set<Authority> authorities = usuario.getRoles().stream()
+                .flatMap(role -> role.getAuthorities().stream())
+                .collect(Collectors.toSet());
+
+        return authorities.stream()
+                .map(auth -> new ResponseAuthorityDTO(auth.getName()))
+                .collect(Collectors.toList());
+    }
+
+
+
+
+
 
 }

@@ -1,4 +1,4 @@
-import api from "@/api";
+import api from "@/api/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -29,6 +29,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { useAuthorities } from "@/contexts/AuthoritiesContext";
 
 function Autores() {
   const [autores, setAutores] = useState([]);
@@ -42,6 +43,8 @@ function Autores() {
   const [isEditing, setIsEditing] = useState(false);
   const [detalhesDialogOpen, setDetalhesDialogOpen] = useState(false);
   const [autorDetalhado, setAutorDetalhado] = useState(null);
+
+  const authorities = useAuthorities();
 
   const aplicarFiltro = async () => {
     const params = [];
@@ -65,6 +68,8 @@ function Autores() {
   }, []);
 
   const fetchAutores = async (query = "") => {
+
+
     try {
       const res = await api.get(`/autores${query}`);
       const dados = res.data.map((autor) => ({
@@ -196,13 +201,15 @@ function Autores() {
             <Search className="mr-2 h-4 w-4" />
             Buscar
           </Button>
-          <Button
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg transition-all"
-            onClick={abrirDialogCriacao}
-          >
-            <CirclePlus className="mr-2 h-4 w-4" />
-            Criar novo Autor
-          </Button>
+          {authorities.includes("autor:create") && (
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg transition-all"
+              onClick={abrirDialogCriacao}
+            >
+              <CirclePlus className="mr-2 h-4 w-4" />
+              Criar novo Autor
+            </Button>
+          )}
         </div>
       </motion.div>
 
@@ -222,9 +229,12 @@ function Autores() {
               <TableHead className="text-slate-600 text-sm">
                 Nacionalidade
               </TableHead>
-              <TableHead className="text-right text-slate-600 text-sm">
-                Ações
-              </TableHead>
+              {(authorities.includes("autor:delete") ||
+                authorities.includes("autor:update")) && (
+                <TableHead className="text-right text-slate-600 text-sm">
+                  Ações
+                </TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -232,7 +242,6 @@ function Autores() {
               <TableRow
                 key={index}
                 className="hover:bg-slate-50 transition-colors cursor-pointer"
-                
               >
                 <TableCell onClick={() => abrirAutor(autor)}>
                   <span className="font-medium text-slate-800">
@@ -245,26 +254,33 @@ function Autores() {
                 <TableCell onClick={() => abrirAutor(autor)}>
                   <span className="text-slate-700">{autor.nacionalidade}</span>
                 </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="border-amber-500 text-amber-600 hover:bg-amber-50 transition-all"
-                      onClick={() => abrirDialogEdicao(autor)}
-                    >
-                      <Pencil size={16} />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="border-red-500 text-red-600 hover:bg-red-50 transition-all"
-                      onClick={() => handleDeleteAutor(autor)}
-                    >
-                      <Trash size={16} />
-                    </Button>
-                  </div>
-                </TableCell>
+                {(authorities.includes("autor:delete") ||
+                  authorities.includes("autor:update")) && (
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      {authorities.includes("autor:update") && (
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="border-amber-500 text-amber-600 hover:bg-amber-50 transition-all"
+                          onClick={() => abrirDialogEdicao(autor)}
+                        >
+                          <Pencil size={16} />
+                        </Button>
+                      )}
+                      {authorities.includes("autor:delete") && (
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="border-red-500 text-red-600 hover:bg-red-50 transition-all"
+                          onClick={() => handleDeleteAutor(autor)}
+                        >
+                          <Trash size={16} />
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

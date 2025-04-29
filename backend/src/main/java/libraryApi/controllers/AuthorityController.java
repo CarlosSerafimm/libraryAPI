@@ -26,7 +26,7 @@ public class AuthorityController {
     private AuthorityMapper authorityMapper;
 
     @GetMapping
-//    @PreAuthorize("hasAuthority('authority:search')")
+    @PreAuthorize("hasAuthority('authority:search')")
     public ResponseEntity<List<ResponseAuthorityDTO>> listarTodos() {
         List<Authority> authorities = authorityService.listarTodos();
         List<ResponseAuthorityDTO> dtoList = authorities.stream()

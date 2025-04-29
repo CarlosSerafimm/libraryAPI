@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class GeneroController {
 
     @GetMapping
-//    @PreAuthorize("hasAuthority('genero:search')")
+    @PreAuthorize("hasAuthority('genero:search')")
     public ResponseEntity<List<String>> getGeneros() {
         List<String> generos = Arrays.stream(GeneroLivro.values())
                 .map(Enum::name)

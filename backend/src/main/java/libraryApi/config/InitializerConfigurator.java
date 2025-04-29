@@ -33,12 +33,11 @@ public class InitializerConfigurator {
     private LivroRepository livroRepository;
 
     private static final List<String> AUTHORITIES_USER = List.of(
-        //AUTOR
-        "autor:create", "autor:search",
-        //GENERO
-        "genero:search",
-        //LIVRO
-        "livro:search"
+            //LIVRO
+            "livro:read", "livro:search", "genero:search",
+            //AUTOR
+            "autor:read", "autor:search"
+
 
     );
     private static final List<String> AUTHORITIES = List.of(

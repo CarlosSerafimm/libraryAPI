@@ -6,8 +6,8 @@ export function isTokenValid() {
     }
   
     try {
-      const payload = JSON.parse(atob(token.split('.')[1])); // decodifica o payload
-      const expiration = payload.exp * 1000; // exp é em segundos, convertendo para ms
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expiration = payload.exp * 1000;
       return Date.now() < expiration;
     } catch (error) {
       console.error("Erro ao validar token:", error);

@@ -16,7 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import api from "@/api";
+import api from "@/api/api";
 import {
   Select,
   SelectContent,
@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAuthorities } from "@/contexts/AuthoritiesContext";
 
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
@@ -37,6 +38,8 @@ function Usuarios() {
   const [paginaAtual, setPaginaAtual] = useState(0);
   const [totalPaginas, setTotalPaginas] = useState(0);
   const [rolesOriginais, setRolesOriginais] = useState([]);
+
+  const authorities = useAuthorities();
 
   useEffect(() => {
     buscarUsuarios();
@@ -200,7 +203,11 @@ function Usuarios() {
               <TableHead className="w-[80px] text-slate-600">Usuário</TableHead>
               <TableHead className="text-slate-600">Username</TableHead>
               <TableHead className="text-slate-600">Cargos</TableHead>
-              <TableHead className="text-right text-slate-600">Ações</TableHead>
+              {authorities.includes("usuario:addRole")  && (
+                  <TableHead className="text-right text-slate-600">
+                    Ações
+                  </TableHead>
+                )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -240,19 +247,21 @@ function Usuarios() {
                     })}
                   </ul>
                 </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex gap-1 text-blue-600 border-blue-600 hover:bg-blue-50"
-                      onClick={() => abrirModal(user)}
-                    >
-                      <Pencil size={16} />
-                      Editar
-                    </Button>
-                  </div>
-                </TableCell>
+                {authorities.includes("usuario:addRole") && (
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex gap-1 text-blue-600 border-blue-600 hover:bg-blue-50"
+                          onClick={() => abrirModal(user)}
+                        >
+                          <Pencil size={16} />
+                          Editar
+                        </Button>
+                      </div>
+                    </TableCell>
+                  )}
               </TableRow>
             ))}
           </TableBody>

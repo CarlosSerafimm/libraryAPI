@@ -1,10 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Login from "./Login";
 import Register from "./Register";
 import { AnimatePresence, motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { isTokenValid } from "@/api/auth";
 
 function Auth() {
   const [isLogin, setIsLogin] = useState(true);
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (isTokenValid()) {
+      navigate("/livros");
+    }
+  }, []);
 
   return (
     <div className="bg-gradient-to-br from-blue-700 to-blue-500 w-screen min-h-screen flex justify-center items-center p-4">

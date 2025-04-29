@@ -24,7 +24,7 @@ public class RoleController {
     private RoleMapper roleMapper;
 
     @PostMapping
-//    @PreAuthorize("hasAuthority('role:create')")
+    @PreAuthorize("hasAuthority('role:create')")
     public ResponseEntity<Void> criarRole(@RequestBody RequestRoleDTO dto){
 
         Role role = roleMapper.requestToEntity(dto);
@@ -34,7 +34,7 @@ public class RoleController {
 
     }
     @GetMapping
-//    @PreAuthorize("hasAuthority('role:search')")
+    @PreAuthorize("hasAuthority('role:search')")
     public ResponseEntity<List<ResponseRoleDTO>> listarTodos() {
         List<Role> roles = roleService.listarTodos();
         List<ResponseRoleDTO> dtos = roles.stream()
@@ -45,16 +45,22 @@ public class RoleController {
     }
 
     @DeleteMapping("/{id}")
-// @PreAuthorize("hasAuthority('role:delete')")
+ @PreAuthorize("hasAuthority('role:delete')")
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
-        roleService.remover(id);
-        return ResponseEntity.noContent().build();
+        try {
+            roleService.remover(id);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 
 
     @PutMapping("/{id}")
-// @PreAuthorize("hasAuthority('role:update')")
+ @PreAuthorize("hasAuthority('role:update')")
     public ResponseEntity<?> atualizarRole(@PathVariable Integer id, @RequestBody RequestUpdateRoleDTO dto) {
         try {
             roleService.atualizarRole(id, dto);

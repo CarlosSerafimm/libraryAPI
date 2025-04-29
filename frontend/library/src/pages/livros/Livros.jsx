@@ -1,4 +1,5 @@
-import api from "@/api";
+import api from "@/api/api";
+import { getAuthorities } from "@/api/getAuthorities";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAuthorities } from "@/contexts/AuthoritiesContext";
 import { set } from "date-fns";
 import { motion } from "framer-motion";
 import { CirclePlus, Pencil, Search, Trash } from "lucide-react";
@@ -48,6 +50,8 @@ function Livros() {
   const [isEditing, setIsEditing] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [autores, setAutores] = useState([]);
+
+  const authorities = useAuthorities();
 
   const aplicarFiltro = async () => {
     const params = [];
@@ -107,8 +111,7 @@ function Livros() {
     try {
       if (isEditing && livroSelecionado.id !== undefined) {
         await api.put(`/livros/${livroSelecionado.id}`, payload);
-      }
-      else {
+      } else {
         await api.post(`/livros`, payload);
       }
       getLivros();
@@ -277,19 +280,20 @@ function Livros() {
             <div className="flex gap-3 items-start sm:items-center justify-between w-full sm:w-auto">
               <Button
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg transition-all"
-                // onClick={aplicarFiltro}
                 onClick={aplicarFiltro}
               >
                 <Search className="mr-2 h-4 w-4" />
                 Buscar
               </Button>
-              <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg transition-all"
-                onClick={abrirDialogCriacao}
-              >
-                <CirclePlus className="mr-2 h-4 w-4" />
-                Criar novo Livro
-              </Button>
+              {authorities.includes("livro:create") && (
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg transition-all"
+                  onClick={abrirDialogCriacao}
+                >
+                  <CirclePlus className="mr-2 h-4 w-4" />
+                  Criar novo Livro
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -312,9 +316,12 @@ function Livros() {
               <TableHead className="text-slate-600 text-sm">Genero</TableHead>
               <TableHead className="text-slate-600 text-sm">Preço</TableHead>
               <TableHead className="text-slate-600 text-sm">Autor</TableHead>
-              <TableHead className="text-right text-slate-600 text-sm">
-                Ações
-              </TableHead>
+              {(authorities.includes("livro:delete") ||
+                authorities.includes("livro:update")) && (
+                <TableHead className="text-right text-slate-600 text-sm">
+                  Ações
+                </TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -353,26 +360,33 @@ function Livros() {
                     {livro.autor}
                   </span>
                 </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="border-amber-500 text-amber-600 hover:bg-amber-50 transition-all"
-                      onClick={() => abrirDialogEdicao(livro)}
-                    >
-                      <Pencil size={16} />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="border-red-500 text-red-600 hover:bg-red-50 transition-all"
-                      onClick={() => handleDeleteLivro(livro)}
-                    >
-                      <Trash size={16} />
-                    </Button>
-                  </div>
-                </TableCell>
+                {(authorities.includes("livro:delete") ||
+                  authorities.includes("livro:update")) && (
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      {authorities.includes("livro:update") && (
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="border-amber-500 text-amber-600 hover:bg-amber-50 transition-all"
+                          onClick={() => abrirDialogEdicao(livro)}
+                        >
+                          <Pencil size={16} />
+                        </Button>
+                      )}
+                      {authorities.includes("livro:delete") && (
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="border-red-500 text-red-600 hover:bg-red-50 transition-all"
+                          onClick={() => handleDeleteLivro(livro)}
+                        >
+                          <Trash size={16} />
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

@@ -1,6 +1,7 @@
 package libraryApi.controllers;
 
 import libraryApi.controllers.dto.RequestUserRoleDTO;
+import libraryApi.controllers.dto.ResponseAuthorityDTO;
 import libraryApi.controllers.dto.ResponseUsuarioDTO;
 import libraryApi.model.Usuario;
 import libraryApi.service.UsuarioService;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -19,7 +22,7 @@ public class UsuarioController {
 
 
     @GetMapping
-//    @PreAuthorize("hasAuthority('usuario:search')")
+    @PreAuthorize("hasAuthority('usuario:search')")
     public ResponseEntity<Page<ResponseUsuarioDTO>> pesquisarUsuarios(
             @RequestParam(required = false) String login,
             @RequestParam(required = false) String roleName,
@@ -32,7 +35,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/addRole")
-//    @PreAuthorize("hasAuthority('usuario:addRole')")
+    @PreAuthorize("hasAuthority('usuario:addRole')")
     public ResponseEntity<Void> adicionarRole(@RequestBody RequestUserRoleDTO request) {
         String login = request.login();
         String roleName = request.roleName().toUpperCase();
@@ -41,12 +44,17 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/remRole")
-//    @PreAuthorize("hasAuthority('usuario:removeRole')")
+    @PreAuthorize("hasAuthority('usuario:removeRole')")
     public ResponseEntity<Void> removerRole(@RequestBody RequestUserRoleDTO request) {
         String login = request.login();
         String roleName = request.roleName().toUpperCase();
         usuarioService.removerRoleDoUsuario(login, roleName);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{login}/authorities")
+    public List<ResponseAuthorityDTO> getAuthoritiesByLogin(@PathVariable String login) {
+        return usuarioService.getAuthoritiesByLogin(login);
     }
 
 }
