@@ -204,7 +204,7 @@ function Livros() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
       >
-        Autores
+        Livros
       </motion.h1>
 
       <motion.div

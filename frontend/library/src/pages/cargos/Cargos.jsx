@@ -131,12 +131,13 @@ function Cargos() {
       name: "",
       color: "rgba(0,0,0,1)",
       authorities: [],
+      modificavel: true, 
     });
-
     setSelectedColor("rgba(0,0,0,1)");
     setIsEditing(false);
     setDialogOpen(true);
   };
+  
 
   const toggleAuthority = (authority) => {
     setSelectedCargo((prev) => {
